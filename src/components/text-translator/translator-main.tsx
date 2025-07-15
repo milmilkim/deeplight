@@ -28,25 +28,26 @@ const TranslatorMain = () => (
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-          <input type="checkbox" />태그핸들링
-          <input type="checkbox" />격식체
+          <PSelect
+            options={[
+              { label: 'latency_optimized', value: 'latency_optimized' },
+              { label: 'quality_optimized', value: 'quality_optimized' },
+              {
+                label: 'prefer_quality_optimized',
+                value: 'prefer_quality_optimized',
+              },
+            ]}
+            placeholder="모델 선택"
+          />
+          <input type="checkbox" />
+          태그핸들링
+          <input type="checkbox" />
+          격식체
         </CollapsibleContent>
       </Collapsible>
     </div>
     <div className="flex col-span-2 gap-1">
-      <div className="flex-1 flex justify-between">
-        <PSelect
-          options={[
-            { label: 'latency_optimized', value: 'latency_optimized' },
-            { label: 'quality_optimized', value: 'quality_optimized' },
-            {
-              label: 'prefer_quality_optimized',
-              value: 'prefer_quality_optimized',
-            },
-          ]}
-          placeholder="모델 선택"
-        />
-
+      <div className="flex-1 flex justify-end">
         <PSelect
           options={[
             { label: '한국어', value: 'ko' },
