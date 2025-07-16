@@ -12,10 +12,18 @@ import {
 } from '@/components/ui/navigation-menu';
 import { TranslatorMain } from '@/components/text-translator';
 import Config from '@/components/config';
+import { useEffect } from 'react';
+import { useConfigStore } from '@/stores/configStore';
 
 function Header() {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+
+  const { loadConfig } = useConfigStore();
+
+  useEffect(() => {
+    loadConfig();
+  }, [loadConfig]);
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">

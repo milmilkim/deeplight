@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -12,12 +12,21 @@ import {
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { useConfigStore } from '../stores/configStore';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
+  const { config, saveConfig } = useConfigStore();
+  const [tempConfig, setTempConfig] = useState(config);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    await saveConfig(tempConfig);
     setOpen(false);
+  };
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempConfig({ ...tempConfig, apiKey: e.target.value });
   };
 
   return (
@@ -33,7 +42,14 @@ const Config = () => {
           <div className="flex w-full flex-col">
             <div className="grid w-full max-w-sm items-center gap-3">
               <Label htmlFor="api-key">API KEY</Label>
-              <Input type="password" id="api-key" placeholder="API KEY" />
+              <Input
+                type="password"
+                id="api-key"
+                placeholder="API KEY"
+                value={tempConfig.apiKey}
+                onChange={handleChange}
+                name="apiKey"
+              />
             </div>
             <DialogFooter>
               <DialogClose asChild>

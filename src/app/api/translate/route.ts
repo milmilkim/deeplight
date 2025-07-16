@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { AxiosError } from 'axios';
+import * as deepl from 'deepl-node';
 
 interface TranslateRequest {
   text: string;
@@ -8,34 +8,30 @@ interface TranslateRequest {
 }
 
 export async function POST(req: Request) {
-  const apiKey = req.headers.get('x-api-key');
+  console.log('translate');
+  const apiKey =
+    req.headers.get('x-api-key');
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
   const body = (await req.json()) as TranslateRequest;
+  console.log(body);
 
-  const form = new URLSearchParams({
-    text: body.text,
-    target_lang: body.targetLang,
-    ...(body.sourceLang ? { source_lang: body.sourceLang } : {}),
-    tag_handling: 'html',
-    model_type: 'latency_optimized',
-  });
+  const deeplClient = new deepl.DeepLClient(apiKey);
 
   try {
-    const response = await axios.post('https://api-free.deepl.com/v2/translate', form.toString(), {
-      headers: {
-        Authorization: `DeepL-Auth-Key ${apiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    const response = await deeplClient.translateText(
+      body.text,
+      body.sourceLang as deepl.SourceLanguageCode,
+      body.targetLang as deepl.TargetLanguageCode,
+    );
 
-    return Response.json(response.data);
+    return Response.json(response.text);
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
-      const message = err.response?.data?.message || err.message || 'Unknown error';
+      const message =
+        err.response?.data?.message || err.message || 'Unknown error';
       return new Response(message, { status: err.response?.status || 500 });
     }
-    // 일반 Error 처리
     const message = err instanceof Error ? err.message : 'Unknown error';
     return new Response(message, { status: 500 });
   }
