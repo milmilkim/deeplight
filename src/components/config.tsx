@@ -24,10 +24,13 @@ const Config = () => {
     setOpen(false);
   };
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempConfig({ ...tempConfig, apiKey: e.target.value });
   };
+
+  useEffect(() => {
+    setTempConfig(config);
+  }, [config]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

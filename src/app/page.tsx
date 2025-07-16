@@ -10,10 +10,14 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { TranslatorMain } from '@/components/text-translator';
 import Config from '@/components/config';
 import { useEffect } from 'react';
 import { useConfigStore } from '@/stores/configStore';
+
+const queryClient = new QueryClient();
 
 function Header() {
   const { theme, setTheme } = useTheme();
@@ -22,6 +26,7 @@ function Header() {
   const { loadConfig } = useConfigStore();
 
   useEffect(() => {
+    console.log('loadConfig');
     loadConfig();
   }, [loadConfig]);
 
@@ -71,11 +76,13 @@ export function Nav() {
 export default function Page() {
   return (
     <ThemeProvider>
-      <Header />
-      <div className="p-4">
-        <Nav />
-        <TranslatorMain />
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <Header />
+        <div className="p-4">
+          <Nav />
+          <TranslatorMain />
+        </div>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

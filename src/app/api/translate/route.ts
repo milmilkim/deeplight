@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   try {
     const response = await deeplClient.translateText(
       body.text,
-      body.sourceLang as deepl.SourceLanguageCode,
+      body.sourceLang as deepl.SourceLanguageCode || null,
       body.targetLang as deepl.TargetLanguageCode,
       {
         context: body.context,

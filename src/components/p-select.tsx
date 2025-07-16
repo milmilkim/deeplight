@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import type * as SelectPrimitive from '@radix-ui/react-select';
 
-interface Option {
+export interface Option {
   label: string;
   value: string;
 }
@@ -49,12 +49,14 @@ interface PSelectProps {
   options: Option[];
   defaultValue?: string;
   placeholder?: string;
+  value?: string;
 }
 const PSelect = ({
   className,
   onChange,
   options,
   defaultValue,
+  value,
   placeholder = 'Select an option',
   ...rest
 }: PSelectProps) => {
@@ -66,6 +68,7 @@ const PSelect = ({
       className={className}
       options={options}
       placeholder={placeholder}
+      value={value}
       {...rest}
     />
   );
