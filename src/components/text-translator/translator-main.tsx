@@ -8,10 +8,10 @@ import { CollapsibleContent } from '@radix-ui/react-collapsible';
 import { useState } from 'react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
-
-const CopyButton = () => (
+import { type TextResult } from 'deepl-node';
+const CopyButton = ({ onClick }: { onClick: () => void }) => (
   <div className="sticky bottom-0">
-    <Button variant={'ghost'} size={'icon'}>
+    <Button variant={'ghost'} size={'icon'} onClick={onClick}>
       <Clipboard />
     </Button>
   </div>
@@ -30,6 +30,7 @@ const TranslatorMain = () => {
   });
 
   const [result, setResult] = useState<string>('');
+  const [billedCharacters, setBilledCharacters] = useState<number>(0);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -39,7 +40,7 @@ const TranslatorMain = () => {
 
   const handleTranslate = async () => {
     const apiKey = useConfigStore.getState().config.apiKey;
-    const { data } = await axios.post(
+    const { data } = await axios.post<TextResult>(
       'http://localhost:3000/api/translate',
       transRequest,
       {
@@ -48,9 +49,22 @@ const TranslatorMain = () => {
         },
       },
     );
-    setResult(data);
+
+    setResult(data.text);
+    setBilledCharacters(data.billedCharacters);
   };
 
+  function getUtf8Bytes(str: string): number {
+    return new TextEncoder().encode(str).length;
+  }
+
+  function formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  const MAX_BYTES = 100 * 1024; // 128KiB = 131072 bytes
   return (
     <div className="mt-2 grid grid-cols-2 gap-2">
       <div className="col">
@@ -124,15 +138,34 @@ const TranslatorMain = () => {
           onChange={handleChange}
         />
         <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-          <CopyButton />
+          <div className="text-sm text-muted-foreground">
+            {formatBytes(getUtf8Bytes(transRequest.text))} /{' '}
+            {formatBytes(MAX_BYTES)}
+          </div>
+          <CopyButton
+            onClick={async () => {
+              await navigator.clipboard.writeText(transRequest.text);
+            }}
+          />
           <Button onClick={handleTranslate}>번역</Button>
         </div>
       </div>
       <div className="h-full">
-        <Textarea placeholder="" value={result} readOnly className="h-full min-h-64" />
+        <Textarea
+          placeholder=""
+          value={result}
+          readOnly
+          className="h-full min-h-64"
+        />
         <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-          <div className="text-sm text-muted-foreground">2000자</div>
-          <CopyButton />
+          <div className="text-sm text-muted-foreground">
+            청구 문자 수: {billedCharacters}자
+          </div>
+          <CopyButton
+            onClick={async () => {
+              await navigator.clipboard.writeText(result);
+            }}
+          />
         </div>
       </div>
     </div>

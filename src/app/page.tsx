@@ -34,10 +34,6 @@ function Header() {
           <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
-
-        {/* <Button variant="ghost" size="icon">
-          <Settings className="h-5 w-5" />
-        </Button> */}
         <Config />
       </div>
     </header>
@@ -56,14 +52,14 @@ export function Nav() {
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Button variant={'outline'} disabled>
-              문서 번역
+              문서 번역(준비 중)
             </Button>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Button variant={'outline'} disabled>
-              용어집
+              용어집(준비 중)
             </Button>
           </NavigationMenuLink>
         </NavigationMenuItem>

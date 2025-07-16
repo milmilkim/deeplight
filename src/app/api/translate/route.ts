@@ -1,14 +1,8 @@
-import { AxiosError } from 'axios';
+import { TranslateRequest } from '@/types/api';
 import * as deepl from 'deepl-node';
 
-interface TranslateRequest {
-  text: string;
-  targetLang: string;
-  sourceLang?: string;
-}
 
 export async function POST(req: Request) {
-  console.log('translate');
   const apiKey =
     req.headers.get('x-api-key');
   if (!apiKey) return new Response('Missing API key', { status: 400 });
@@ -23,16 +17,15 @@ export async function POST(req: Request) {
       body.text,
       body.sourceLang as deepl.SourceLanguageCode,
       body.targetLang as deepl.TargetLanguageCode,
+      {
+        context: body.context,
+      },
     );
 
-    return Response.json(response.text);
+    return Response.json(response);
   } catch (err: unknown) {
-    if (err instanceof AxiosError) {
-      const message =
-        err.response?.data?.message || err.message || 'Unknown error';
-      return new Response(message, { status: err.response?.status || 500 });
-    }
     const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error(message);
     return new Response(message, { status: 500 });
   }
 }
