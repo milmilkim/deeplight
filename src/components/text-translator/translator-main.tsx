@@ -1,24 +1,20 @@
 import PSelect from '../p-select';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import {
-  ArrowLeftRight,
-  ChevronsUpDown,
-  Clipboard,
-  Wrench,
-} from 'lucide-react';
-import { Collapsible } from '../ui/collapsible';
-import { CollapsibleTrigger } from '@radix-ui/react-collapsible';
-import { CollapsibleContent } from '@radix-ui/react-collapsible';
-import { useState } from 'react';
+import { ArrowLeftRight, Clipboard } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
-import { ModelType, type TextResult } from 'deepl-node';
+import { SourceLanguageCode, type TextResult } from 'deepl-node';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Option } from '@/components/p-select';
 import { swapLangCode } from '@/config/languages';
 import { getLabelByCode } from '@/config/languages';
 import { TranslateRequest } from '@/types/api';
+import {
+  useTextTranslate,
+  TextTranslateProvider,
+} from '@/contexts/text-translate-context';
+import AdvancedSettings from './advanced-settings';
 
 const MAX_BYTES = 100 * 1024;
 
@@ -29,7 +25,6 @@ const CopyButton = ({ onClick }: { onClick: () => void }) => (
     </Button>
   </div>
 );
-
 
 const getTranslate = async (transRequest: TranslateRequest, apiKey: string) => {
   const { data } = await axios.post<TextResult>(
@@ -51,14 +46,15 @@ const getLanguages = async (apiKey: string) => {
   });
   return data;
 };
-const TranslatorMain = () => {
-  const [transRequest, setTransRequest] = useState<TranslateRequest>({
-    sourceLang: 'en',
-    targetLang: 'ko',
-    text: '',
-    model: undefined,
-  });
-
+const TranslatorMainContent = () => {
+  const {
+    transRequest,
+    setTransRequest,
+    result,
+    setResult,
+    billedCharacters,
+    setBilledCharacters,
+  } = useTextTranslate();
   const { config } = useConfigStore();
 
   const { data: languages, isLoading: isLoadingLanguages } = useQuery({
@@ -68,7 +64,15 @@ const TranslatorMain = () => {
     enabled: !!config.apiKey,
   });
 
-  const { mutate: translate } = useMutation({
+  const { mutate: translate, isPending: isTranslating } = useMutation<
+    {
+      text: string;
+      billedCharacters: number;
+      detectedSourceLang: SourceLanguageCode;
+    },
+    Error,
+    TranslateRequest
+  >({
     mutationFn: async (transRequest: TranslateRequest) => {
       const apiKey = useConfigStore.getState().config.apiKey;
       const textChunks = splitByBytes(transRequest.text, MAX_BYTES);
@@ -102,10 +106,20 @@ const TranslatorMain = () => {
         // 일부 실패는 성공한 것만 반환 + 경고
         alert(`일부 문장 번역에 실패했습니다. (실패 ${failedCount}회)`);
       }
-      return { text: mergedText, billedCharacters: totalBilled };
+      const firstResult = results.find((r) => r.status === 'fulfilled');
+      const detectedSourceLang =
+        firstResult?.status === 'fulfilled'
+          ? firstResult.value.detectedSourceLang
+          : 'en';
+      return {
+        text: mergedText,
+        billedCharacters: totalBilled,
+        detectedSourceLang,
+      };
     },
     onSuccess: (data) => {
       setResult(data.text);
+      setTransRequest({ ...transRequest, sourceLang: data.detectedSourceLang });
       setBilledCharacters(data.billedCharacters);
     },
     onError: (error) => {
@@ -115,23 +129,22 @@ const TranslatorMain = () => {
     },
   });
 
-  const sourceLanguageOptions: Option[] =
-    languages?.sourceLanguages
-      .map((lang) => ({
+  const sourceLanguageOptions: Option[] = [
+    ...(languages?.sourceLanguages
+      ?.map((lang) => ({
         label: getLabelByCode(lang.code),
         value: lang.code,
       }))
-      .sort((a, b) => a.label.localeCompare(b.label)) || [];
+      .sort((a, b) => a.label.localeCompare(b.label)) || []),
+  ];
+
   const targetLanguageOptions: Option[] =
     languages?.targetLanguages
-      .map((lang) => ({
+      ?.map((lang) => ({
         label: getLabelByCode(lang.code),
         value: lang.code,
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) || [];
-
-  const [result, setResult] = useState<string>('');
-  const [billedCharacters, setBilledCharacters] = useState<number>(0);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -159,61 +172,21 @@ const TranslatorMain = () => {
     return result;
   }
 
-  //   function getUtf8Bytes(str: string): number {
-  //     return new TextEncoder().encode(str).length;
-  //   }
-
-  //   function formatBytes(bytes: number): string {
-  //     if (bytes < 1024) return `${bytes} B`;
-  //     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  //     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  //   }
-
   return (
     <div className="mt-2 grid grid-cols-2 gap-2">
       <div className="col">
-        <Collapsible>
-          <div className="flex items-center gap-4 px-4">
-            <h4 className="text-sm font-semibold flex items-center">
-              {' '}
-              <Wrench className="w-4 mr-1" />
-              세부 설정
-            </h4>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
-                <ChevronsUpDown />
-                <span className="sr-only">Toggle</span>
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            <PSelect
-              value={transRequest.model}
-              onChange={(value) => {
-                setTransRequest({ ...transRequest, model: value as ModelType });
-              }}
-              options={[
-                { label: 'latency_optimized', value: 'latency_optimized' },
-                { label: 'quality_optimized', value: 'quality_optimized' },
-                {
-                  label: 'prefer_quality_optimized',
-                  value: 'prefer_quality_optimized',
-                },
-              ]}
-              placeholder="모델 선택"
-            />
-          </CollapsibleContent>
-        </Collapsible>
+        <AdvancedSettings />
       </div>
       <div className="flex col-span-2 gap-1">
         <div className="flex-1 flex justify-end">
           <PSelect
             options={sourceLanguageOptions}
-            placeholder={`Select source language`}
+            placeholder={`자동 감지`}
             onChange={(value) => {
               setTransRequest({ ...transRequest, sourceLang: value });
             }}
             value={transRequest.sourceLang}
+            disalbed={isTranslating || isLoadingLanguages}
           />
         </div>
         <Button
@@ -247,6 +220,7 @@ const TranslatorMain = () => {
               setTransRequest({ ...transRequest, targetLang: value });
             }}
             value={transRequest.targetLang}
+            disalbed={isTranslating || isLoadingLanguages}
             placeholder={`Select target language`}
           />
         </div>
@@ -256,6 +230,7 @@ const TranslatorMain = () => {
           placeholder="번역할 내용을 입력하세요."
           className="h-full min-h-64"
           name="text"
+          disabled={isTranslating}
           value={transRequest.text}
           onChange={handleChange}
         />
@@ -268,7 +243,25 @@ const TranslatorMain = () => {
               await navigator.clipboard.writeText(transRequest.text);
             }}
           />
-          <Button onClick={() => translate(transRequest)}>번역</Button>
+          <Button
+            disabled={isTranslating}
+            onClick={() => {
+              // 유효성 검사
+              if (transRequest.text.length === 0) {
+                alert('번역할 내용을 입력하세요.');
+                return;
+              }
+
+              if (transRequest.targetLang === transRequest.sourceLang) {
+                alert('번역할 내용과 번역 대상 언어가 같습니다.');
+                return;
+              }
+
+              translate(transRequest);
+            }}
+          >
+            번역
+          </Button>
         </div>
       </div>
       <div className="h-full">
@@ -292,4 +285,13 @@ const TranslatorMain = () => {
     </div>
   );
 };
+
+const TranslatorMain = () => {
+  return (
+    <TextTranslateProvider>
+      <TranslatorMainContent />
+    </TextTranslateProvider>
+  );
+};
+
 export default TranslatorMain;

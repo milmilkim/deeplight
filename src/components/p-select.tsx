@@ -50,6 +50,7 @@ interface PSelectProps {
   defaultValue?: string;
   placeholder?: string;
   value?: string;
+  disalbed?: boolean;
 }
 const PSelect = ({
   className,
