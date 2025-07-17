@@ -273,7 +273,10 @@ const TranslatorMainContent = () => {
         />
         <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
           <div className="text-sm text-muted-foreground">
-            청구 문자 수: {billedCharacters}자
+            {result.length}{' / '}
+            {billedCharacters > 0 && (
+              <span> 청구 문자 수: {billedCharacters}자</span>
+            )}
           </div>
           <CopyButton
             onClick={async () => {

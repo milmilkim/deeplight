@@ -54,6 +54,11 @@ const Config = () => {
                 name="apiKey"
               />
             </div>
+
+            <div className='mt-4'>
+              <Label>API 사용량 조회</Label>
+              
+            </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant="outline">취소</Button>
