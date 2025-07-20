@@ -44,33 +44,33 @@ function Header() {
   );
 }
 
-export function Nav() {
-  return (
-    <NavigationMenu viewport={false}>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Button variant={'outline'}>텍스트 번역</Button>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Button variant={'outline'} disabled>
-              문서 번역(준비 중)
-            </Button>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Button variant={'outline'} disabled>
-              용어집(준비 중)
-            </Button>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  );
-}
+// function Nav() {
+//   return (
+//     <NavigationMenu viewport={false}>
+//       <NavigationMenuList>
+//         <NavigationMenuItem>
+//           <NavigationMenuLink asChild>
+//             <Button variant={'outline'}>텍스트 번역</Button>
+//           </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//           <NavigationMenuLink asChild>
+//             <Button variant={'outline'} disabled>
+//               문서 번역(준비 중)
+//             </Button>
+//           </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//           <NavigationMenuLink asChild>
+//             <Button variant={'outline'} disabled>
+//               용어집(준비 중)
+//             </Button>
+//           </NavigationMenuLink>
+//         </NavigationMenuItem>
+//       </NavigationMenuList>
+//     </NavigationMenu>
+//   );
+// }
 
 export default function Page() {
   return (
