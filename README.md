@@ -1,36 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Deeplight
+DeepL API를 사용하기 위한 프론트엔드 
 
-## Getting Started
+## API KEY 설정
+<img width="756" height="604" alt="image" src="https://github.com/user-attachments/assets/83ded3f9-2bde-406b-bea4-960343da918c" />
+환경 설정에서 DeepL에서 발급한 API 키를 넣는다. 
+(API 키를 넣지 않으면 아무 기능도 쓸 수 없다.)
 
-First, run the development server:
+## 번역
+<img width="768" height="565" alt="image" src="https://github.com/user-attachments/assets/62fb83e2-2f88-4ad2-bd09-ea614dc8ee41" />
+언어 설정을 누르고 번역을 클릭한다.
+글자 수 제한은 없다. (너무 길 경우 여러 번 나눠서 요청을 보낼 것이다.)
+실제로 청구된 문자 수를 확인할 수 있다.
+API 사용량 안에서만 번역 가능할 것이다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+(배포 환경 https://deeplight.vercel.app 에서 번역 내용은 로깅(저장)하고 있지 않다.)
