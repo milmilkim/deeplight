@@ -238,12 +238,18 @@ const TranslatorMainContent = () => {
           <div className="text-sm text-muted-foreground">
             {transRequest.text.length}
             {billedCharacters > 0 && (
-              <span> /  청구 문자 수: {billedCharacters}자</span>
+              <span> / 청구 문자 수: {billedCharacters}자</span>
             )}
           </div>
           <CopyButton
             onClick={async () => {
-              await navigator.clipboard.writeText(transRequest.text);
+              try {
+                await navigator.clipboard.writeText(transRequest.text);
+                alert('복사되었습니다.');
+              } catch (error) {
+                alert('복사에 실패했습니다.');
+                console.error(error);
+              }
             }}
           />
           <Button
@@ -278,7 +284,13 @@ const TranslatorMainContent = () => {
           <div className="text-sm text-muted-foreground">{result.length}</div>
           <CopyButton
             onClick={async () => {
-              await navigator.clipboard.writeText(result);
+              try {
+                await navigator.clipboard.writeText(result);
+                alert('복사되었습니다.');
+              } catch (error) {
+                alert('복사에 실패했습니다.');
+                console.error(error);
+              }
             }}
           />
         </div>
