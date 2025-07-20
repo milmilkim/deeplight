@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Settings } from 'lucide-react';
+import { RefreshCcw, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -13,6 +13,10 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { useConfigStore } from '../stores/configStore';
+import axios from 'axios';
+import { Usage } from 'deepl-node';
+import { useQuery } from '@tanstack/react-query';
+import { Progress } from './ui/progress';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
@@ -27,6 +31,25 @@ const Config = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempConfig({ ...tempConfig, apiKey: e.target.value });
   };
+
+  const getUsage = async () => {
+    const { data } = await axios.get<Usage>('/api/usage', {
+      headers: {
+        'x-api-key': tempConfig.apiKey,
+      },
+    });
+    return data;
+  };
+
+  const {
+    data: usage,
+    isFetching: isLoadingUsage,
+    refetch: refetchUsage,
+  } = useQuery({
+    queryKey: ['usage'],
+    queryFn: () => getUsage(),
+    enabled: !!tempConfig.apiKey,
+  });
 
   useEffect(() => {
     setTempConfig(config);
@@ -55,9 +78,28 @@ const Config = () => {
               />
             </div>
 
-            <div className='mt-4'>
+            <div className="mt-4">
               <Label>API 사용량 조회</Label>
-              
+              <div className="flex items-center gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => refetchUsage()}
+                >
+                  <RefreshCcw />
+                </Button>
+                {isLoadingUsage ? (
+                  'loading'
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      {usage?.character?.count.toLocaleString('ko-KR') || 0} /{' '}
+                      {usage?.character?.limit.toLocaleString('ko-KR') || 0}
+                    </div>
+                    <Progress value={33} max={usage?.character?.limit} />
+                  </div>
+                )}
+              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>

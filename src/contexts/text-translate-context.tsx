@@ -21,7 +21,15 @@ export const TextTranslateProvider: React.FC<TextTranslateProviderProps> = ({ ch
     sourceLang: '',
     targetLang: 'ko',
     text: '',
-    model: undefined,
+    modelType: undefined,
+    formality: undefined,
+    splitSentences: 'on',
+    preserveFormatting: undefined,
+    tagHandling: undefined,
+    outlineDetection: undefined,
+    splittingTags: undefined,
+    nonSplittingTags: undefined,
+    context: undefined,
   });
 
   const [result, setResult] = useState<string>('');

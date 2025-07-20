@@ -237,6 +237,9 @@ const TranslatorMainContent = () => {
         <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
           <div className="text-sm text-muted-foreground">
             {transRequest.text.length}
+            {billedCharacters > 0 && (
+              <span> /  청구 문자 수: {billedCharacters}자</span>
+            )}
           </div>
           <CopyButton
             onClick={async () => {
@@ -272,12 +275,7 @@ const TranslatorMainContent = () => {
           className="h-full min-h-64"
         />
         <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-          <div className="text-sm text-muted-foreground">
-            {result.length}{' / '}
-            {billedCharacters > 0 && (
-              <span> 청구 문자 수: {billedCharacters}자</span>
-            )}
-          </div>
+          <div className="text-sm text-muted-foreground">{result.length}</div>
           <CopyButton
             onClick={async () => {
               await navigator.clipboard.writeText(result);

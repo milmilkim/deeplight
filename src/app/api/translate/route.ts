@@ -1,10 +1,8 @@
 import { TranslateRequest } from '@/types/api';
 import * as deepl from 'deepl-node';
 
-
 export async function POST(req: Request) {
-  const apiKey =
-    req.headers.get('x-api-key');
+  const apiKey = req.headers.get('x-api-key');
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
   const body = (await req.json()) as TranslateRequest;
@@ -15,10 +13,18 @@ export async function POST(req: Request) {
   try {
     const response = await deeplClient.translateText(
       body.text,
-      body.sourceLang as deepl.SourceLanguageCode || null,
+      (body.sourceLang as deepl.SourceLanguageCode) || null,
       body.targetLang as deepl.TargetLanguageCode,
       {
         context: body.context,
+        modelType: (body.modelType as deepl.ModelType) || undefined,
+        formality: (body.formality as deepl.Formality) || undefined,
+        splitSentences: (body.splitSentences as deepl.SentenceSplittingMode) || undefined,
+        preserveFormatting: body.preserveFormatting || undefined,
+        tagHandling: (body.tagHandling as deepl.TranslateTextOptions['tagHandling']) || undefined,
+        outlineDetection: body.outlineDetection || undefined,
+        splittingTags: body.splittingTags || undefined,
+        nonSplittingTags: body.nonSplittingTags || undefined,
       },
     );
 

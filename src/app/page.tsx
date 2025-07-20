@@ -26,7 +26,6 @@ function Header() {
   const { loadConfig } = useConfigStore();
 
   useEffect(() => {
-    console.log('loadConfig');
     loadConfig();
   }, [loadConfig]);
 
@@ -79,7 +78,7 @@ export default function Page() {
       <QueryClientProvider client={queryClient}>
         <Header />
         <div className="p-4">
-          <Nav />
+          {/* <Nav /> */}
           <TranslatorMain />
         </div>
       </QueryClientProvider>
