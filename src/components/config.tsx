@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { RefreshCcw, Settings } from 'lucide-react';
+import { Eye, EyeOff, RefreshCcw, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -22,6 +22,7 @@ const Config = () => {
   const [open, setOpen] = useState(false);
   const { config, saveConfig } = useConfigStore();
   const [tempConfig, setTempConfig] = useState(config);
+  const [apiKeyVisible, setApiKeyVisible] = useState(false);
 
   const handleSave = async () => {
     await saveConfig(tempConfig);
@@ -66,16 +67,27 @@ const Config = () => {
         <DialogHeader>
           <DialogTitle className="mb-4">환경 설정</DialogTitle>
           <div className="flex w-full flex-col">
-            <div className="grid w-full max-w-sm items-center gap-3">
+            <div className="w-full max-w-sm items-center gap-3">
               <Label htmlFor="api-key">API KEY</Label>
-              <Input
-                type="password"
-                id="api-key"
-                placeholder="API KEY"
-                value={tempConfig.apiKey}
-                onChange={handleChange}
-                name="apiKey"
-              />
+              <div className="flex items-center gap-2 mt-2">
+                <Input
+                  type={apiKeyVisible ? 'text' : 'password'}
+                  id="api-key"
+                  placeholder="API KEY"
+                  value={tempConfig.apiKey}
+                  onChange={handleChange}
+                  name="apiKey"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    setApiKeyVisible((prev) => !prev);
+                  }}
+                >
+                  {apiKeyVisible ? <Eye /> : <EyeOff />}
+                </Button>
+              </div>
             </div>
 
             <div className="mt-4">
