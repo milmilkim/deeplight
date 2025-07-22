@@ -90,7 +90,7 @@ const Config = () => {
               </div>
             </div>
 
-            <div className="mt-4">
+            <div className="my-4">
               <Label>API 사용량 조회</Label>
               <div className="flex items-center gap-2 mt-2">
                 <Button

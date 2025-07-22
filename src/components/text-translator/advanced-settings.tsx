@@ -28,77 +28,79 @@ const AdvancedSettings = () => {
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent>
-        <div className="flex">
-          <Label className="mr-2">모델 선택</Label>
-          <PSelect
-            value={transRequest.modelType || ''}
-            onChange={(value) => {
-              setTransRequest({
-                ...transRequest,
-                modelType: value as ModelType,
-              });
-            }}
-            options={[
-              { label: 'latency_optimized', value: 'latency_optimized' },
-              { label: 'quality_optimized', value: 'quality_optimized' },
-              {
-                label: 'prefer_quality_optimized',
-                value: 'prefer_quality_optimized',
-              },
-            ]}
-            placeholder="모델 선택"
-          />
-        </div>
-        <div className="flex">
-          <Label className="mr-2">formality</Label>
-          <PSelect
-            value={transRequest.modelType || ''}
-            onChange={(value) => {
-              setTransRequest({
-                ...transRequest,
-                modelType: value as ModelType,
-              });
-            }}
-            options={
-              [
-                { label: 'less', value: 'less' },
-                { label: 'more', value: 'more' },
+        <div className="flex flex-col gap-2">
+          <div className="flex">
+            <Label className="mr-2">모델 선택</Label>
+            <PSelect
+              value={transRequest.modelType || ''}
+              onChange={(value) => {
+                setTransRequest({
+                  ...transRequest,
+                  modelType: value as ModelType,
+                });
+              }}
+              options={[
+                { label: 'latency_optimized', value: 'latency_optimized' },
+                { label: 'quality_optimized', value: 'quality_optimized' },
                 {
-                  label: 'default',
-                  value: 'default',
+                  label: 'prefer_quality_optimized',
+                  value: 'prefer_quality_optimized',
                 },
-                {
-                  label: 'prefer_less',
-                  value: 'prefer_less',
-                },
-                {
-                  label: 'prefer_more',
-                  value: 'prefer_more',
-                },
-              ] as { label: string; value: Formality }[]
-            }
-            placeholder="formality"
-          />
-        </div>
-        <div className="flex">
-          <Label className="mr-2">splitSentences</Label>
-          <PSelect
-            value={transRequest.splitSentences || ''}
-            onChange={(value) => {
-              setTransRequest({
-                ...transRequest,
-                splitSentences: value as SentenceSplittingMode,
-              });
-            }}
-            options={
-              [
-                { label: 'on', value: 'on' },
-                { label: 'off', value: 'off' },
-                { label: 'nonewlines', value: 'nonewlines' },
-              ] as { label: string; value: SentenceSplittingMode }[]
-            }
-            placeholder="splitSentences"
-          />
+              ]}
+              placeholder="모델 선택"
+            />
+          </div>
+          <div className="flex">
+            <Label className="mr-2">formality</Label>
+            <PSelect
+              value={transRequest.modelType || ''}
+              onChange={(value) => {
+                setTransRequest({
+                  ...transRequest,
+                  modelType: value as ModelType,
+                });
+              }}
+              options={
+                [
+                  { label: 'less', value: 'less' },
+                  { label: 'more', value: 'more' },
+                  {
+                    label: 'default',
+                    value: 'default',
+                  },
+                  {
+                    label: 'prefer_less',
+                    value: 'prefer_less',
+                  },
+                  {
+                    label: 'prefer_more',
+                    value: 'prefer_more',
+                  },
+                ] as { label: string; value: Formality }[]
+              }
+              placeholder="formality"
+            />
+          </div>
+          <div className="flex">
+            <Label className="mr-2">splitSentences</Label>
+            <PSelect
+              value={transRequest.splitSentences || ''}
+              onChange={(value) => {
+                setTransRequest({
+                  ...transRequest,
+                  splitSentences: value as SentenceSplittingMode,
+                });
+              }}
+              options={
+                [
+                  { label: 'on', value: 'on' },
+                  { label: 'off', value: 'off' },
+                  { label: 'nonewlines', value: 'nonewlines' },
+                ] as { label: string; value: SentenceSplittingMode }[]
+              }
+              placeholder="splitSentences"
+            />
+          </div>
         </div>
       </CollapsibleContent>
     </Collapsible>

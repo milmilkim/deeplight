@@ -173,13 +173,14 @@ const TranslatorMainContent = () => {
   }
 
   return (
-    <div className="mt-2 grid grid-cols-2 gap-2">
+    <div className="mt-2">
       <div className="col">
         <AdvancedSettings />
       </div>
-      <div className="flex col-span-2 gap-1">
+      <div className="flex col-span-2 gap-1 w-full">
         <div className="flex-1 flex justify-end">
           <PSelect
+            className="w-full sm:w-[180px]"
             options={sourceLanguageOptions}
             placeholder={`자동 감지`}
             onChange={(value) => {
@@ -215,6 +216,7 @@ const TranslatorMainContent = () => {
         </Button>
         <div className="flex-1">
           <PSelect
+            className="w-full sm:w-[180px]"
             options={targetLanguageOptions}
             onChange={(value) => {
               setTransRequest({ ...transRequest, targetLang: value });
@@ -225,74 +227,76 @@ const TranslatorMainContent = () => {
           />
         </div>
       </div>
-      <div className="h-full">
-        <Textarea
-          placeholder="번역할 내용을 입력하세요."
-          className="h-full min-h-64"
-          name="text"
-          disabled={isTranslating}
-          value={transRequest.text}
-          onChange={handleChange}
-        />
-        <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-          <div className="text-sm text-muted-foreground">
-            {transRequest.text.length}
-            {billedCharacters > 0 && (
-              <span> / 청구 문자 수: {billedCharacters}자</span>
-            )}
-          </div>
-          <CopyButton
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(transRequest.text);
-                alert('복사되었습니다.');
-              } catch (error) {
-                alert('복사에 실패했습니다.');
-                console.error(error);
-              }
-            }}
-          />
-          <Button
+      <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
+        <div className="h-full">
+          <Textarea
+            placeholder="번역할 내용을 입력하세요."
+            className="h-full min-h-64"
+            name="text"
             disabled={isTranslating}
-            onClick={() => {
-              // 유효성 검사
-              if (transRequest.text.length === 0) {
-                alert('번역할 내용을 입력하세요.');
-                return;
-              }
-
-              if (transRequest.targetLang === transRequest.sourceLang) {
-                alert('번역할 내용과 번역 대상 언어가 같습니다.');
-                return;
-              }
-
-              translate(transRequest);
-            }}
-          >
-            번역
-          </Button>
-        </div>
-      </div>
-      <div className="h-full">
-        <Textarea
-          placeholder=""
-          value={result}
-          readOnly
-          className="h-full min-h-64"
-        />
-        <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-          <div className="text-sm text-muted-foreground">{result.length}</div>
-          <CopyButton
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(result);
-                alert('복사되었습니다.');
-              } catch (error) {
-                alert('복사에 실패했습니다.');
-                console.error(error);
-              }
-            }}
+            value={transRequest.text}
+            onChange={handleChange}
           />
+          <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
+            <div className="text-sm text-muted-foreground">
+              {transRequest.text.length}
+              {billedCharacters > 0 && (
+                <span> / 청구 문자 수: {billedCharacters}자</span>
+              )}
+            </div>
+            <CopyButton
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(transRequest.text);
+                  alert('복사되었습니다.');
+                } catch (error) {
+                  alert('복사에 실패했습니다.');
+                  console.error(error);
+                }
+              }}
+            />
+            <Button
+              disabled={isTranslating}
+              onClick={() => {
+                // 유효성 검사
+                if (transRequest.text.length === 0) {
+                  alert('번역할 내용을 입력하세요.');
+                  return;
+                }
+
+                if (transRequest.targetLang === transRequest.sourceLang) {
+                  alert('번역할 내용과 번역 대상 언어가 같습니다.');
+                  return;
+                }
+
+                translate(transRequest);
+              }}
+            >
+              번역
+            </Button>
+          </div>
+        </div>
+        <div className="h-full">
+          <Textarea
+            placeholder=""
+            value={result}
+            readOnly
+            className="h-full min-h-64"
+          />
+          <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
+            <div className="text-sm text-muted-foreground">{result.length}</div>
+            <CopyButton
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(result);
+                  alert('복사되었습니다.');
+                } catch (error) {
+                  alert('복사에 실패했습니다.');
+                  console.error(error);
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
