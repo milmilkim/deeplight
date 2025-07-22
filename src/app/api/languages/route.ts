@@ -7,10 +7,9 @@ export async function GET(req: Request) {
   const deeplClient = new deepl.DeepLClient(apiKey);
 
   try {
-    const [sourceLanguages, targetLanguages] = await Promise.all([
-      deeplClient.getSourceLanguages(),
-      deeplClient.getTargetLanguages(),
-    ]);
+    const sourceLanguages = await deeplClient.getSourceLanguages();
+    const targetLanguages = await deeplClient.getTargetLanguages();
+
 
     return Response.json({
       sourceLanguages,
