@@ -1,0 +1,38 @@
+{
+  "common": {
+    "submit": "submit",
+    "save": "save",
+    "cancel": "cancel",
+    "confirm": "confirm",
+    "close": "close",
+    "config": {
+      "header": "config",
+      "apiKey": "API KEY",
+      "apiKeyUsage": "API usage"
+    }
+  },
+  "textTranslate": {
+    "autoDetect": "Auto detect",
+    "advancedSettings": "Advanced settings",
+    "label": {
+      "modelType": "Model type"
+    },
+    "button": {
+      "translate": "Translate"
+    },
+    "placeholder": {
+      "sourceLanguage": "source language",
+      "targetLanguage": "target language",
+      "text": "Enter text to translate"
+    },
+    "billedCharacters": "billedCharacters: {count} characters",
+    "alert": {
+      "copySuccess": "Copied to clipboard",
+      "copyError": "Failed to copy",
+      "sameLanguage": "Source and target languages cannot be the same",
+      "inputEmpty": "Please enter text to translate",
+      "translateError": "Failed to translate",
+      "apiKeyNotSet": "API key is not set"
+    }
+  }
+}

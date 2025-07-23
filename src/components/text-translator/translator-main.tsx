@@ -5,10 +5,9 @@ import { ArrowLeftRight, Clipboard } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
 import { SourceLanguageCode, type TextResult } from 'deepl-node';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Option } from '@/components/p-select';
-import { swapLangCode } from '@/config/languages';
-import { getLabelByCode } from '@/config/languages';
+import { sourceLanguages, swapLangCode, targetLanguages } from '@/config/languages';
 import { TranslateRequest } from '@/types/api';
 import {
   useTextTranslate,
@@ -36,17 +35,7 @@ const getTranslate = async (transRequest: TranslateRequest, apiKey: string) => {
   return data;
 };
 
-const getLanguages = async (apiKey: string) => {
-  const { data } = await axios.get<{
-    sourceLanguages: { name: string; code: string }[];
-    targetLanguages: { name: string; code: string }[];
-  }>('/api/languages', {
-    headers: {
-      'x-api-key': apiKey,
-    },
-  });
-  return data;
-};
+
 const TranslatorMainContent = () => {
   const {
     transRequest,
@@ -56,16 +45,12 @@ const TranslatorMainContent = () => {
     billedCharacters,
     setBilledCharacters,
   } = useTextTranslate();
+
   const { config } = useConfigStore();
 
-  const { data: languages, isLoading: isLoadingLanguages } = useQuery({
-    queryKey: ['languages'],
-    queryFn: () => getLanguages(config.apiKey),
-    retry: false,
-    enabled: !!config.apiKey,
-  });
 
   const t = useTranslations('textTranslate');
+  const tLang = useTranslations('lang');
 
   const { mutate: translate, isPending: isTranslating } = useMutation<
     {
@@ -77,6 +62,9 @@ const TranslatorMainContent = () => {
     TranslateRequest
   >({
     mutationFn: async (transRequest: TranslateRequest) => {
+      if (!config.apiKey) {
+        throw new Error(t('alert.apiKeyNotSet'));
+      }
       const apiKey = useConfigStore.getState().config.apiKey;
       const textChunks = splitByBytes(transRequest.text, MAX_BYTES);
 
@@ -95,7 +83,7 @@ const TranslatorMainContent = () => {
       const failedCount = results.filter((r) => r.status === 'rejected').length;
       if (failedCount === textChunks.length) {
         const firstError = results.find((r) => r.status === 'rejected');
-        let message = '번역 중 오류가 발생했습니다.';
+        let message = t('alert.translateError');
         if (
           firstError &&
           firstError.status === 'rejected' &&
@@ -107,7 +95,7 @@ const TranslatorMainContent = () => {
       }
       if (failedCount > 0) {
         // 일부 실패는 성공한 것만 반환 + 경고
-        alert(`일부 문장 번역에 실패했습니다. (실패 ${failedCount}회)`);
+        alert(t('alert.someTranslateFailed', { count: failedCount }));
       }
       const firstResult = results.find((r) => r.status === 'fulfilled');
       const detectedSourceLang =
@@ -133,18 +121,18 @@ const TranslatorMainContent = () => {
   });
 
   const sourceLanguageOptions: Option[] = [
-    ...(languages?.sourceLanguages
+    ...(sourceLanguages
       ?.map((lang) => ({
-        label: getLabelByCode(lang.code),
+        label: tLang(lang.code),
         value: lang.code,
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) || []),
   ];
 
   const targetLanguageOptions: Option[] =
-    languages?.targetLanguages
+    targetLanguages
       ?.map((lang) => ({
-        label: getLabelByCode(lang.code),
+        label: tLang(lang.code),
         value: lang.code,
       }))
       .sort((a, b) => a.label.localeCompare(b.label)) || [];
@@ -190,7 +178,7 @@ const TranslatorMainContent = () => {
               setTransRequest({ ...transRequest, sourceLang: value });
             }}
             value={transRequest.sourceLang}
-            disalbed={isTranslating || isLoadingLanguages}
+            disalbed={isTranslating}
           />
         </div>
         <Button
@@ -225,15 +213,15 @@ const TranslatorMainContent = () => {
               setTransRequest({ ...transRequest, targetLang: value });
             }}
             value={transRequest.targetLang}
-            disalbed={isTranslating || isLoadingLanguages}
-            placeholder={`Select target language`}
+            disalbed={isTranslating}
+            placeholder={t('placeholder.targetLanguage')}
           />
         </div>
       </div>
       <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
         <div className="h-full">
           <Textarea
-            placeholder="번역할 내용을 입력하세요."
+            placeholder={t('placeholder.text')}
             className="h-full min-h-64"
             name="text"
             disabled={isTranslating}
@@ -244,16 +232,22 @@ const TranslatorMainContent = () => {
             <div className="text-sm text-muted-foreground">
               {transRequest.text.length}
               {billedCharacters > 0 && (
-                <span> / 청구 문자 수: {billedCharacters}자</span>
+                <span>
+                  {' '}
+                  /{' '}
+                  {t('billedCharacters', {
+                    count: billedCharacters.toString(),
+                  })}
+                </span>
               )}
             </div>
             <CopyButton
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(transRequest.text);
-                  alert('복사되었습니다.');
+                  alert(t('alert.copySuccess'));
                 } catch (error) {
-                  alert('복사에 실패했습니다.');
+                  alert(t('alert.copyError'));
                   console.error(error);
                 }
               }}
@@ -263,19 +257,19 @@ const TranslatorMainContent = () => {
               onClick={() => {
                 // 유효성 검사
                 if (transRequest.text.length === 0) {
-                  alert('번역할 내용을 입력하세요.');
+                  alert(t('alert.inputEmpty'));
                   return;
                 }
 
                 if (transRequest.targetLang === transRequest.sourceLang) {
-                  alert('번역할 내용과 번역 대상 언어가 같습니다.');
+                  alert(t('alert.sameLanguage'));
                   return;
                 }
 
                 translate(transRequest);
               }}
             >
-              번역
+              {t('button.translate')}
             </Button>
           </div>
         </div>
@@ -292,9 +286,9 @@ const TranslatorMainContent = () => {
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(result);
-                  alert('복사되었습니다.');
+                  alert(t('alert.copySuccess'));
                 } catch (error) {
-                  alert('복사에 실패했습니다.');
+                  alert(t('alert.copyError'));
                   console.error(error);
                 }
               }}

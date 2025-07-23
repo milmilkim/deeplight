@@ -1,150 +1,299 @@
-export const LANGUAGES = [
-  // 소스 언어
+export const sourceLanguages = [
   {
+    name: 'arabic',
     code: 'ar',
-    label: '아랍어',
   },
   {
+    name: 'Bulgarian',
     code: 'bg',
-    label: '불가리아어',
   },
   {
+    name: 'Czech',
     code: 'cs',
-    label: '체코어',
   },
   {
+    name: 'Danish',
     code: 'da',
-    label: '덴마크어',
   },
   {
+    name: 'German',
     code: 'de',
-    label: '독일어',
   },
   {
+    name: 'Greek',
     code: 'el',
-    label: '그리스어',
   },
   {
+    name: 'English',
     code: 'en',
-    label: '영어',
   },
   {
+    name: 'Spanish',
     code: 'es',
-    label: '스페인어',
   },
   {
+    name: 'Estonian',
     code: 'et',
-    label: '에스토니아어',
   },
   {
+    name: 'Finnish',
     code: 'fi',
-    label: '핀란드어',
   },
   {
+    name: 'French',
     code: 'fr',
-    label: '프랑스어',
   },
   {
+    name: 'Hungarian',
     code: 'hu',
-    label: '헝가리어',
   },
   {
+    name: 'Indonesian',
     code: 'id',
-    label: '인도네시아어',
   },
   {
+    name: 'Italian',
     code: 'it',
-    label: '이탈리아어',
   },
   {
+    name: 'Japanese',
     code: 'ja',
-    label: '일본어',
   },
   {
+    name: 'Korean',
     code: 'ko',
-    label: '한국어',
   },
   {
+    name: 'Lithuanian',
     code: 'lt',
-    label: '리투아니아어',
   },
   {
+    name: 'Latvian',
     code: 'lv',
-    label: '라트비아어',
   },
   {
+    name: 'Norwegian',
     code: 'nb',
-    label: '노르웨이어',
   },
   {
+    name: 'Dutch',
     code: 'nl',
-    label: '네덜란드어',
   },
   {
+    name: 'Polish',
     code: 'pl',
-    label: '폴란드어',
   },
   {
+    name: 'Portuguese',
     code: 'pt',
-    label: '포르투갈어',
   },
   {
+    name: 'Romanian',
     code: 'ro',
-    label: '루마니아어',
   },
   {
+    name: 'Russian',
     code: 'ru',
-    label: '러시아어',
   },
   {
+    name: 'Slovak',
     code: 'sk',
-    label: '슬로바키아어',
   },
   {
+    name: 'Slovenian',
     code: 'sl',
-    label: '슬로베니아어',
   },
   {
+    name: 'Swedish',
     code: 'sv',
-    label: '스웨덴어',
   },
   {
+    name: 'Turkish',
     code: 'tr',
-    label: '터키어',
   },
   {
+    name: 'Ukrainian',
     code: 'uk',
-    label: '우크라이나어',
   },
   {
+    name: 'Chinese',
     code: 'zh',
-    label: '중국어',
-  },
-  {
-    code: 'en-GB',
-    label: '영어(영국)',
-  },
-  {
-    code: 'en-US',
-    label: '영어(미국)',
-  },
-  {
-    code: 'pt-BR',
-    label: '포르투갈어(브라질)',
-  },
-  {
-    code: 'pt-PT',
-    label: '포르투갈어(유럽)',
-  },
-  {
-    code: 'zh-HANS',
-    label: '중국어(간체)',
-  },
-  {
-    code: 'zh-HANT',
-    label: '중국어(번체)',
   },
 ];
+
+export const targetLanguages = 
+  [
+    {
+      name: 'Arabic',
+      code: 'ar',
+      supportsFormality: false,
+    },
+    {
+      name: 'Bulgarian',
+      code: 'bg',
+      supportsFormality: false,
+    },
+    {
+      name: 'Czech',
+      code: 'cs',
+      supportsFormality: false,
+    },
+    {
+      name: 'Danish',
+      code: 'da',
+      supportsFormality: false,
+    },
+    {
+      name: 'German',
+      code: 'de',
+      supportsFormality: true,
+    },
+    {
+      name: 'Greek',
+      code: 'el',
+      supportsFormality: false,
+    },
+    {
+      name: 'English (British)',
+      code: 'en-GB',
+      supportsFormality: false,
+    },
+    {
+      name: 'English (American)',
+      code: 'en-US',
+      supportsFormality: false,
+    },
+    {
+      name: 'Spanish',
+      code: 'es',
+      supportsFormality: true,
+    },
+    {
+      name: 'Estonian',
+      code: 'et',
+      supportsFormality: false,
+    },
+    {
+      name: 'Finnish',
+      code: 'fi',
+      supportsFormality: false,
+    },
+    {
+      name: 'French',
+      code: 'fr',
+      supportsFormality: true,
+    },
+    {
+      name: 'Hungarian',
+      code: 'hu',
+      supportsFormality: false,
+    },
+    {
+      name: 'Indonesian',
+      code: 'id',
+      supportsFormality: false,
+    },
+    {
+      name: 'Italian',
+      code: 'it',
+      supportsFormality: true,
+    },
+    {
+      name: 'Japanese',
+      code: 'ja',
+      supportsFormality: true,
+    },
+    {
+      name: 'Korean',
+      code: 'ko',
+      supportsFormality: false,
+    },
+    {
+      name: 'Lithuanian',
+      code: 'lt',
+      supportsFormality: false,
+    },
+    {
+      name: 'Latvian',
+      code: 'lv',
+      supportsFormality: false,
+    },
+    {
+      name: 'Norwegian',
+      code: 'nb',
+      supportsFormality: false,
+    },
+    {
+      name: 'Dutch',
+      code: 'nl',
+      supportsFormality: true,
+    },
+    {
+      name: 'Polish',
+      code: 'pl',
+      supportsFormality: true,
+    },
+    {
+      name: 'Portuguese (Brazilian)',
+      code: 'pt-BR',
+      supportsFormality: true,
+    },
+    {
+      name: 'Portuguese (European)',
+      code: 'pt-PT',
+      supportsFormality: true,
+    },
+    {
+      name: 'Romanian',
+      code: 'ro',
+      supportsFormality: false,
+    },
+    {
+      name: 'Russian',
+      code: 'ru',
+      supportsFormality: true,
+    },
+    {
+      name: 'Slovak',
+      code: 'sk',
+      supportsFormality: false,
+    },
+    {
+      name: 'Slovenian',
+      code: 'sl',
+      supportsFormality: false,
+    },
+    {
+      name: 'Swedish',
+      code: 'sv',
+      supportsFormality: false,
+    },
+    {
+      name: 'Turkish',
+      code: 'tr',
+      supportsFormality: false,
+    },
+    {
+      name: 'Ukrainian',
+      code: 'uk',
+      supportsFormality: false,
+    },
+    {
+      name: 'Chinese (simplified)',
+      code: 'zh-HANS',
+      supportsFormality: false,
+    },
+    {
+      name: 'Chinese (traditional)',
+      code: 'zh-HANT',
+      supportsFormality: false,
+  },
+];
+
+export const LANGUAGES = {
+  ...sourceLanguages,
+  ...targetLanguages,
+};
 
 export const SWAP_MAP: Record<string, string> = {
   // source → target
@@ -164,9 +313,4 @@ export function swapLangCode(source: string, target: string) {
     newSource: SWAP_MAP[target] || target,
     newTarget: SWAP_MAP[source] || source,
   };
-}
-
-export function getLabelByCode(code: string) {
-  const lang = LANGUAGES.find((l) => l.code === code);
-  return lang ? lang.label : code;
 }

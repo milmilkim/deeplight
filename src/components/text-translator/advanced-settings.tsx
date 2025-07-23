@@ -32,9 +32,10 @@ const AdvancedSettings = () => {
       <CollapsibleContent>
         <div className="flex flex-col gap-2">
           <div className="flex">
-            <Label className="mr-2">모델 선택</Label>
+            <Label className="mr-2">{t('label.modelType')}</Label>
             <PSelect
               value={transRequest.modelType || ''}
+              placeholder={t('label.modelType')}
               onChange={(value) => {
                 setTransRequest({
                   ...transRequest,
@@ -49,7 +50,6 @@ const AdvancedSettings = () => {
                   value: 'prefer_quality_optimized',
                 },
               ]}
-              placeholder="모델 선택"
             />
           </div>
           <div className="flex">
@@ -86,6 +86,7 @@ const AdvancedSettings = () => {
           <div className="flex">
             <Label className="mr-2">splitSentences</Label>
             <PSelect
+              className='mb-2'
               value={transRequest.splitSentences || ''}
               onChange={(value) => {
                 setTransRequest({
