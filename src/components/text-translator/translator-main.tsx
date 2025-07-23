@@ -15,6 +15,7 @@ import {
   TextTranslateProvider,
 } from '@/contexts/text-translate-context';
 import AdvancedSettings from './advanced-settings';
+import { useTranslations } from 'next-intl';
 
 const MAX_BYTES = 100 * 1024;
 
@@ -63,6 +64,8 @@ const TranslatorMainContent = () => {
     retry: false,
     enabled: !!config.apiKey,
   });
+
+  const t = useTranslations('textTranslate');
 
   const { mutate: translate, isPending: isTranslating } = useMutation<
     {
@@ -182,7 +185,7 @@ const TranslatorMainContent = () => {
           <PSelect
             className="w-full sm:w-[180px]"
             options={sourceLanguageOptions}
-            placeholder={`자동 감지`}
+            placeholder={t('autoDetect')}
             onChange={(value) => {
               setTransRequest({ ...transRequest, sourceLang: value });
             }}

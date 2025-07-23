@@ -17,7 +17,7 @@ import axios from 'axios';
 import { Usage } from 'deepl-node';
 import { useQuery } from '@tanstack/react-query';
 import { Progress } from './ui/progress';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
@@ -25,7 +25,7 @@ const Config = () => {
   const [tempConfig, setTempConfig] = useState(config);
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
 
-  const { t } = useTranslation();
+  const t = useTranslations('common');
 
   const handleSave = async () => {
     await saveConfig(tempConfig);

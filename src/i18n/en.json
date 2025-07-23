@@ -1,0 +1,19 @@
+{
+  "common": {
+    "submit": "submit",
+    "save": "save",
+    "cancel": "cancel",
+    "confirm": "confirm",
+    "close": "close",
+    "config": {
+      "header": "config",
+      "apiKey": "API KEY",
+      "apiKeyUsage": "API usage"
+    }
+  },
+  "textTranslate": {
+    "autoDetect": "Auto detect",
+    "advancedSettings": "Advanced settings",
+    "modelType": "Model type"
+  }
+}

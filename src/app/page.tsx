@@ -11,7 +11,6 @@ import Config from '@/components/config';
 import { useEffect } from 'react';
 import { useConfigStore } from '@/stores/configStore';
 import LocaleSelector from '@/components/locale-selector';
-import '@/locales/i18n';
 
 const queryClient = new QueryClient();
 

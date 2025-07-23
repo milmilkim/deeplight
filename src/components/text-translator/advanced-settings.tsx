@@ -9,16 +9,18 @@ import PSelect from '../p-select';
 import { useTextTranslate } from '@/contexts/text-translate-context';
 import { Formality, ModelType, SentenceSplittingMode } from 'deepl-node';
 import { Label } from '../ui/label';
+import { useTranslations } from 'next-intl';
 
 const AdvancedSettings = () => {
   const { transRequest, setTransRequest } = useTextTranslate();
+  const t = useTranslations('textTranslate');
   return (
     <Collapsible>
       <div className="flex items-center gap-4 px-4">
         <h4 className="text-sm font-semibold flex items-center">
           {' '}
           <Wrench className="w-4 mr-1" />
-          고급 설정
+          {t('advancedSettings')}
         </h4>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">

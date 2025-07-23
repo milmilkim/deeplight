@@ -9,14 +9,16 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { useState } from 'react';
-import i18n from '@/locales/i18n';
+import { useLocale } from 'next-intl';
+import { setUserLocale } from '@/i18n/services';
 
 const LocaleSelector = () => {
-  const [lang, setLang] = useState(i18n.resolvedLanguage);
+  const locale = useLocale();
+  const [lang, setLang] = useState(locale);
 
   const changeLang = (value: string) => {
     setLang(value);
-    i18n.changeLanguage(value);
+    setUserLocale(value);
   };
 
   return (
@@ -28,7 +30,10 @@ const LocaleSelector = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-32">
-          <DropdownMenuRadioGroup value={lang} onValueChange={changeLang}>
+          <DropdownMenuRadioGroup
+            value={lang}
+            onValueChange={changeLang}
+          >
             <DropdownMenuRadioItem value="ko">한국어</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="en">English</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
