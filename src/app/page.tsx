@@ -4,18 +4,14 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { TranslatorMain } from '@/components/text-translator';
 import Config from '@/components/config';
 import { useEffect } from 'react';
 import { useConfigStore } from '@/stores/configStore';
+import LocaleSelector from '@/components/locale-selector';
+import '@/locales/i18n';
 
 const queryClient = new QueryClient();
 
@@ -33,6 +29,7 @@ function Header() {
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
       <div className="text-lg font-semibold tracking-tight">DeepLight</div>
       <div className="flex items-center gap-2">
+        <LocaleSelector />
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
           <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

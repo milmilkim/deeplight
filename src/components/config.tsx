@@ -17,12 +17,15 @@ import axios from 'axios';
 import { Usage } from 'deepl-node';
 import { useQuery } from '@tanstack/react-query';
 import { Progress } from './ui/progress';
+import { useTranslation } from 'react-i18next';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
   const { config, saveConfig } = useConfigStore();
   const [tempConfig, setTempConfig] = useState(config);
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
+
+  const { t } = useTranslation();
 
   const handleSave = async () => {
     await saveConfig(tempConfig);
@@ -65,15 +68,15 @@ const Config = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-4">환경 설정</DialogTitle>
+          <DialogTitle className="mb-4">{t('config.header')}</DialogTitle>
           <div className="flex w-full flex-col">
             <div className="w-full max-w-sm items-center gap-3">
-              <Label htmlFor="api-key">API KEY</Label>
+              <Label htmlFor="api-key">{t('config.apiKey')}</Label>
               <div className="flex items-center gap-2 mt-2">
                 <Input
                   type={apiKeyVisible ? 'text' : 'password'}
                   id="api-key"
-                  placeholder="API KEY"
+                  placeholder={t('config.apiKey')}
                   value={tempConfig.apiKey}
                   onChange={handleChange}
                   name="apiKey"
@@ -91,7 +94,7 @@ const Config = () => {
             </div>
 
             <div className="my-4">
-              <Label>API 사용량 조회</Label>
+              <Label>{t('config.apiKeyUsage')}</Label>
               <div className="flex items-center gap-2 mt-2">
                 <Button
                   variant="outline"
@@ -115,9 +118,9 @@ const Config = () => {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">취소</Button>
+                <Button variant="outline">{t('cancel')}</Button>
               </DialogClose>
-              <Button onClick={handleSave}>저장</Button>
+              <Button onClick={handleSave}>{t('save')}</Button>
             </DialogFooter>
           </div>
         </DialogHeader>

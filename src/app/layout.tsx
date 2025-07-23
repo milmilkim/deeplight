@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
+
 // 메타데이터 설정
 export const metadata: Metadata = {
   title: 'DeepLight',
