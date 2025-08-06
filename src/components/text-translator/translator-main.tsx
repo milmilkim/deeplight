@@ -1,13 +1,17 @@
 import PSelect from '../p-select';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import { ArrowLeftRight, Clipboard } from 'lucide-react';
+import { ArrowLeftRight, Clipboard, X } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
 import { SourceLanguageCode, type TextResult } from 'deepl-node';
 import { useMutation } from '@tanstack/react-query';
 import { Option } from '@/components/p-select';
-import { sourceLanguages, swapLangCode, targetLanguages } from '@/config/languages';
+import {
+  sourceLanguages,
+  swapLangCode,
+  targetLanguages,
+} from '@/config/languages';
 import { TranslateRequest } from '@/types/api';
 import {
   useTextTranslate,
@@ -15,6 +19,7 @@ import {
 } from '@/contexts/text-translate-context';
 import AdvancedSettings from './advanced-settings';
 import { useTranslations } from 'next-intl';
+import { Close } from '@radix-ui/react-dialog';
 
 const MAX_BYTES = 100 * 1024;
 
@@ -35,7 +40,6 @@ const getTranslate = async (transRequest: TranslateRequest, apiKey: string) => {
   return data;
 };
 
-
 const TranslatorMainContent = () => {
   const {
     transRequest,
@@ -47,7 +51,6 @@ const TranslatorMainContent = () => {
   } = useTextTranslate();
 
   const { config } = useConfigStore();
-
 
   const t = useTranslations('textTranslate');
   const tLang = useTranslations('lang');
@@ -219,7 +222,7 @@ const TranslatorMainContent = () => {
         </div>
       </div>
       <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
-        <div className="h-full">
+        <div className="h-full relative">
           <Textarea
             placeholder={t('placeholder.text')}
             className="h-full min-h-64"
@@ -228,6 +231,21 @@ const TranslatorMainContent = () => {
             value={transRequest.text}
             onChange={handleChange}
           />
+          {transRequest.text.length > 0 && (
+          <div className="absolute top-0 right-0 mr-1 mt-1">
+            <Button
+              variant={'ghost'}
+              size={'icon'}
+              onClick={() => {
+                setTransRequest({ ...transRequest, text: '' });
+                setResult('');
+                setBilledCharacters(0);
+              }}
+            >
+                <X />
+              </Button>
+            </div>
+          )}
           <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
             <div className="text-sm text-muted-foreground">
               {transRequest.text.length}
