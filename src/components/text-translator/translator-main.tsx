@@ -62,10 +62,10 @@ const TranslatorMainContent = () => {
     TranslateRequest
   >({
     mutationFn: async (transRequest: TranslateRequest) => {
-      if (!config.apiKey) {
+      if (!config.deepLConfig.apiKey) {
         throw new Error(t('alert.apiKeyNotSet'));
       }
-      const apiKey = useConfigStore.getState().config.apiKey;
+      const apiKey = useConfigStore.getState().config.deepLConfig.apiKey;
       const textChunks = splitByBytes(transRequest.text, MAX_BYTES);
 
       const promises = textChunks.map((chunk) =>

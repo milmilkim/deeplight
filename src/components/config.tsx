@@ -21,25 +21,25 @@ import { useTranslations } from 'next-intl';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
-  const { config, saveConfig } = useConfigStore();
+  const { config, updateConfig } = useConfigStore();
   const [tempConfig, setTempConfig] = useState(config);
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
 
   const t = useTranslations('common');
 
   const handleSave = async () => {
-    await saveConfig(tempConfig);
+    updateConfig(tempConfig);
     setOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempConfig({ ...tempConfig, apiKey: e.target.value });
+    setTempConfig({ ...tempConfig, deepLConfig: {apiKey: e.target.value} });
   };
 
   const getUsage = async () => {
     const { data } = await axios.get<Usage>('/api/usage', {
       headers: {
-        'x-api-key': tempConfig.apiKey,
+        'x-api-key': tempConfig.deepLConfig.apiKey,
       },
     });
     return data;
@@ -52,7 +52,7 @@ const Config = () => {
   } = useQuery({
     queryKey: ['usage'],
     queryFn: () => getUsage(),
-    enabled: !!tempConfig.apiKey,
+    enabled: !!tempConfig.deepLConfig.apiKey && open,
   });
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const Config = () => {
                   type={apiKeyVisible ? 'text' : 'password'}
                   id="api-key"
                   placeholder={t('config.apiKey')}
-                  value={tempConfig.apiKey}
+                  value={tempConfig.deepLConfig.apiKey}
                   onChange={handleChange}
                   name="apiKey"
                 />
@@ -106,12 +106,12 @@ const Config = () => {
                 {isLoadingUsage ? (
                   'loading'
                 ) : (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 w-full">
                     <div>
                       {usage?.character?.count.toLocaleString('ko-KR') || 0} /{' '}
                       {usage?.character?.limit.toLocaleString('ko-KR') || 0}
                     </div>
-                    <Progress value={33} max={usage?.character?.limit} />
+                    <Progress value={usage?.character?.count ?? 0} max={usage?.character?.limit} />
                   </div>
                 )}
               </div>

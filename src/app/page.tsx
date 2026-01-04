@@ -18,11 +18,11 @@ function Header() {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const { loadConfig } = useConfigStore();
+  // const { loadConfig } = useConfigStore();
 
-  useEffect(() => {
-    loadConfig();
-  }, [loadConfig]);
+  // useEffect(() => {
+  //   loadConfig();
+  // }, [loadConfig]);
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">

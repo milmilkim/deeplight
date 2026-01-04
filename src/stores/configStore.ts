@@ -1,38 +1,46 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import localforage from 'localforage';
+import { GlobalConfig, DEFAULT_CONFIG } from '@/types/global-config';
 
-export interface Config {
-  apiKey: string;
+// localforage
+localforage.config({
+  name: 'deeplight-app',
+  storeName: 'config_store',
+});
+
+const storageAdapter: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return await localforage.getItem<string>(name);
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await localforage.setItem(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await localforage.removeItem(name);
+  },
+};
+
+interface ConfigState {
+  config: GlobalConfig;
+  updateConfig: (newConfig: Partial<GlobalConfig>) => void;
 }
 
-export const CONFIG_KEY = 'deeplight-config';
+export const useConfigStore = create<ConfigState>()(
+  persist(
+    (set) => ({
+      config: DEFAULT_CONFIG,
+      _hasHydrated: false,
 
-interface ConfigStore {
-  config: Config;
-  setConfig: (config: Config) => void;
-  loadConfig: () => Promise<void>;
-  saveConfig: (config: Config) => Promise<void>;
-}
-
-export const useConfigStore = create<ConfigStore>((set) => ({
-  config: { apiKey: '' },
-  setConfig: (config) => set({ config }),
-  loadConfig: async () => {
-    try {
-      const value = await localforage.getItem(CONFIG_KEY);
-      if (value && typeof value === 'object') {
-        set({ config: value as Config });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  saveConfig: async (config) => {
-    try {
-      await localforage.setItem(CONFIG_KEY, config);
-      set({ config });
-    } catch (err) {
-      console.log(err);
-    }
-  },
-})); 
+      updateConfig: (newConfig) =>
+        set((state) => ({
+          config: { ...state.config, ...newConfig },
+        })),
+    }),
+    {
+      name: 'deeplight-config',
+      storage: createJSONStorage(() => storageAdapter),
+      partialize: (state) => ({ config: state.config }),
+    },
+  ),
+);
