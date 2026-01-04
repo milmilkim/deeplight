@@ -1,6 +1,6 @@
-import PSelect from '../p-select';
-import { Button } from '../ui/button';
-import { Textarea } from '../ui/textarea';
+import PSelect from '../../p-select';
+import { Button } from '../../ui/button';
+import { Textarea } from '../../ui/textarea';
 import { ArrowLeftRight, Clipboard } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';

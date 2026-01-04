@@ -1,0 +1,1 @@
+export { default as TranslatorMain } from './translator-main';

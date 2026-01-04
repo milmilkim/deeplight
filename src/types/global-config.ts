@@ -9,8 +9,6 @@ export interface CustomProvider {
 }
 
 export interface GlobalConfig {
-  appMode: 'DEEPL' | 'LLM';
-
   deepLConfig: {
     apiKey: string;
   };
@@ -22,7 +20,6 @@ export interface GlobalConfig {
 }
 
 export const DEFAULT_CONFIG: GlobalConfig = {
-  appMode: 'DEEPL',
   deepLConfig: {
     apiKey: '',
   },

@@ -6,23 +6,24 @@ import { Moon, Sun } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { TranslatorMain } from '@/components/text-translator';
+import { TranslatorMain as DeepLTranslatorMain } from '@/components/text-translator/deepl-mode';
+import { TranslatorMain as AITranslatorMain } from '@/components/text-translator/ai-mode'
+
 import Config from '@/components/config';
-import { useEffect } from 'react';
-import { useConfigStore } from '@/stores/configStore';
 import LocaleSelector from '@/components/locale-selector';
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu';
+import { createContext, MouseEventHandler, useContext, useState } from 'react';
 
 const queryClient = new QueryClient();
 
-function Header() {
+const Header = () => {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
-
-  // const { loadConfig } = useConfigStore();
-
-  // useEffect(() => {
-  //   loadConfig();
-  // }, [loadConfig]);
 
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
@@ -38,46 +39,65 @@ function Header() {
       </div>
     </header>
   );
+};
+
+type AppMode = 'LLM' | 'DEEPL';
+interface AppModeContextType {
+  appMode: AppMode;
+  setAppMode: (mode: AppMode) => void;
 }
 
-// function Nav() {
-//   return (
-//     <NavigationMenu viewport={false}>
-//       <NavigationMenuList>
-//         <NavigationMenuItem>
-//           <NavigationMenuLink asChild>
-//             <Button variant={'outline'}>텍스트 번역</Button>
-//           </NavigationMenuLink>
-//         </NavigationMenuItem>
-//         <NavigationMenuItem>
-//           <NavigationMenuLink asChild>
-//             <Button variant={'outline'} disabled>
-//               문서 번역(준비 중)
-//             </Button>
-//           </NavigationMenuLink>
-//         </NavigationMenuItem>
-//         <NavigationMenuItem>
-//           <NavigationMenuLink asChild>
-//             <Button variant={'outline'} disabled>
-//               용어집(준비 중)
-//             </Button>
-//           </NavigationMenuLink>
-//         </NavigationMenuItem>
-//       </NavigationMenuList>
-//     </NavigationMenu>
-//   );
-// }
+const AppModeContext = createContext<AppModeContextType | undefined>(undefined);
 
-export default function Page() {
+const NavItem = (props: { name: string; onClick?: MouseEventHandler }) => {
+  return (
+    <NavigationMenuItem>
+      <NavigationMenuLink active={true} asChild>
+        <Button variant={'outline'} onClick={props.onClick}>
+          {props.name}
+        </Button>
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  );
+};
+
+const Nav = () => {
+  const context = useContext(AppModeContext);
+
+  return (
+    <NavigationMenu viewport={false}>
+      <NavigationMenuList>
+        <NavItem name="AI MODE" onClick={() => context?.setAppMode('LLM')} />
+        <NavItem
+          name="DeepL MODE"
+          onClick={() => context?.setAppMode('DEEPL')}
+        />
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+};
+
+const Page = () => {
+  const [appMode, setAppMode] = useState<'LLM' | 'DEEPL'>('LLM');
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <Header />
         <div className="p-4">
-          {/* <Nav /> */}
-          <TranslatorMain />
+          <AppModeContext.Provider
+            value={{
+              appMode,
+              setAppMode,
+            }}
+          >
+            <Nav />
+            {appMode === 'LLM' ? <AITranslatorMain /> : <DeepLTranslatorMain />}
+          </AppModeContext.Provider>
         </div>
       </QueryClientProvider>
     </ThemeProvider>
   );
-}
+};
+
+export default Page;

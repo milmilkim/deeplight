@@ -1,6 +1,6 @@
 import { TranslateTextOptions } from "deepl-node";
 
-export interface TranslateRequest extends TranslateTextOptions {
+export interface DeePLTranslateRequest extends TranslateTextOptions {
   text: string;
   context?: string;
   sourceLang: string;

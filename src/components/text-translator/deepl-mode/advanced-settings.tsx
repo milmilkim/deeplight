@@ -3,12 +3,12 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '../ui/collapsible';
-import { Button } from '../ui/button';
-import PSelect from '../p-select';
+} from '../../ui/collapsible';
+import { Button } from '../../ui/button';
+import PSelect from '../../p-select';
 import { useTextTranslate } from '@/contexts/text-translate-context';
 import { Formality, ModelType, SentenceSplittingMode } from 'deepl-node';
-import { Label } from '../ui/label';
+import { Label } from '../../ui/label';
 import { useTranslations } from 'next-intl';
 
 const AdvancedSettings = () => {
