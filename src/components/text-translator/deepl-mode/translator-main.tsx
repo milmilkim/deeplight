@@ -8,7 +8,7 @@ import { SourceLanguageCode, type TextResult } from 'deepl-node';
 import { useMutation } from '@tanstack/react-query';
 import { Option } from '@/components/p-select';
 import { sourceLanguages, swapLangCode, targetLanguages } from '@/config/languages';
-import { TranslateRequest } from '@/types/api';
+import { DeepLTranslateRequest } from '@/types/api';
 import {
   useTextTranslate,
   TextTranslateProvider,
@@ -26,7 +26,7 @@ const CopyButton = ({ onClick }: { onClick: () => void }) => (
   </div>
 );
 
-const getTranslate = async (transRequest: TranslateRequest, apiKey: string) => {
+const getTranslate = async (transRequest: DeepLTranslateRequest, apiKey: string) => {
   const { data } = await axios.post<TextResult>(
     '/api/translate',
     transRequest,
@@ -59,9 +59,9 @@ const TranslatorMainContent = () => {
       detectedSourceLang: SourceLanguageCode;
     },
     Error,
-    TranslateRequest
+    DeepLTranslateRequest
   >({
-    mutationFn: async (transRequest: TranslateRequest) => {
+    mutationFn: async (transRequest: DeepLTranslateRequest) => {
       if (!config.deepLConfig.apiKey) {
         throw new Error(t('alert.apiKeyNotSet'));
       }
