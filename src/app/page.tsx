@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TranslatorMain as DeepLTranslatorMain } from '@/components/text-translator/deepl-mode';
 import { TranslatorMain as AITranslatorMain } from '@/components/text-translator/ai-mode'
 
-import Config from '@/components/config';
+import Config from '@/components/global-config-modal/modal';
 import LocaleSelector from '@/components/locale-selector';
 import {
   NavigationMenu,

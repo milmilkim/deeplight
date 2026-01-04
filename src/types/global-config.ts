@@ -8,13 +8,16 @@ export interface CustomProvider {
   model: string;
 }
 
+interface ProviderConfig {
+  apiKey: string;
+}
+
 export interface GlobalConfig {
   deepLConfig: {
     apiKey: string;
   };
   llmConfig: {
-    provider: LLMProvider;
-    model: string;
+    googleConfig: ProviderConfig;
   };
   customProviders: CustomProvider[];
 }
@@ -24,8 +27,9 @@ export const DEFAULT_CONFIG: GlobalConfig = {
     apiKey: '',
   },
   llmConfig: {
-    provider: 'openai',
-    model: 'gpt-4.1',
+    googleConfig: {
+      apiKey: '',
+    },
   },
   customProviders: [],
 };
