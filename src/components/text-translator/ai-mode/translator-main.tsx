@@ -4,12 +4,27 @@ import { Textarea } from '@/components/ui/textarea';
 import { useTranslations } from 'next-intl';
 import CopyButton from '../copy-button';
 import ContentTextarea from '../content-textarea';
+import LanguageSelector from '../language-selector';
 
 const TranslatorMain = () => {
   const t = useTranslations('textTranslate');
 
   return (
     <div className="w-full">
+      <div className="flex col-span-2 gap-1 w-full">
+        <LanguageSelector
+          onSourceLanguageChange={(value) => {
+            // setTransRequest({ ...transRequest, sourceLang: value });
+          }}
+          onTargetLanguageChange={(value) => {
+            // setTransRequest({ ...transRequest, targetLang: value });
+          }}
+          //   sourceLanguageValue={transRequest.sourceLang}
+          //   targetLanguageValue={transRequest.targetLang}
+          //   isTranslating={isTranslating}
+          //   onClickSwap={() => handleClickSwap()}
+        />
+      </div>
       <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
         <ContentTextarea
           placeholder={t('placeholder.text')}
