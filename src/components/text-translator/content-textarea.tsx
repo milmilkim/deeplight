@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Textarea } from '../ui/textarea';
 import clsx from 'clsx';
-import React, { ChangeEventHandler } from 'react';
+import React, { ChangeEventHandler, ReactNode } from 'react';
 
 interface ContentTextareaProps {
   isTranslating?: boolean;
@@ -9,7 +9,8 @@ interface ContentTextareaProps {
   className?: string;
   onChange?: ChangeEventHandler;
   name?: string;
-  placeholder?: string
+  placeholder?: string;
+  footer?: ReactNode
 }
 
 const ContentTextarea = ({
@@ -22,14 +23,19 @@ const ContentTextarea = ({
   const t = useTranslations('textTranslate');
 
   return (
-    <Textarea
-      className={clsx('h-full min-h-64', className)}
-      name={name ?? 'text'}
-      disabled={isTranslating}
-      value={value}
-      onChange={onChange}
-      {...props}
-    />
+    <div className="h-full">
+      <Textarea
+        className={clsx('h-full min-h-64', className)}
+        name={props.name ?? 'text'}
+        disabled={isTranslating}
+        value={value}
+        onChange={onChange}
+        {...props}
+      />
+      <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
+        {props.footer}
+      </div>
+    </div>
   );
 };
 

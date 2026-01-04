@@ -185,67 +185,64 @@ const TranslatorMainContent = () => {
         />
       </div>
       <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
-        <div className="h-full">
-          <ContentTextarea
-            placeholder={t('placeholder.text')}
-            isTranslating={isTranslating}
-            value={transRequest.text}
-            onChange={handleChange}
-          />
+        <ContentTextarea
+          placeholder={t('placeholder.text')}
+          isTranslating={isTranslating}
+          value={transRequest.text}
+          onChange={handleChange}
+          footer={
+            <>
+              <div className="text-sm text-muted-foreground">
+                {transRequest.text.length}
+                {billedCharacters > 0 && (
+                  <span>
+                    {' '}
+                    /{' '}
+                    {t('billedCharacters', {
+                      count: billedCharacters.toString(),
+                    })}
+                  </span>
+                )}
+              </div>
+              <CopyButton
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(transRequest.text);
+                    alert(t('alert.copySuccess'));
+                  } catch (error) {
+                    alert(t('alert.copyError'));
+                    console.error(error);
+                  }
+                }}
+              />
+              <Button
+                disabled={isTranslating}
+                onClick={() => {
+                  // 유효성 검사
+                  if (transRequest.text.length === 0) {
+                    alert(t('alert.inputEmpty'));
+                    return;
+                  }
 
-          <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
-            <div className="text-sm text-muted-foreground">
-              {transRequest.text.length}
-              {billedCharacters > 0 && (
-                <span>
-                  {' '}
-                  /{' '}
-                  {t('billedCharacters', {
-                    count: billedCharacters.toString(),
-                  })}
-                </span>
-              )}
-            </div>
-            <CopyButton
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(transRequest.text);
-                  alert(t('alert.copySuccess'));
-                } catch (error) {
-                  alert(t('alert.copyError'));
-                  console.error(error);
-                }
-              }}
-            />
-            <Button
-              disabled={isTranslating}
-              onClick={() => {
-                // 유효성 검사
-                if (transRequest.text.length === 0) {
-                  alert(t('alert.inputEmpty'));
-                  return;
-                }
+                  if (transRequest.targetLang === transRequest.sourceLang) {
+                    alert(t('alert.sameLanguage'));
+                    return;
+                  }
 
-                if (transRequest.targetLang === transRequest.sourceLang) {
-                  alert(t('alert.sameLanguage'));
-                  return;
-                }
-
-                translate(transRequest);
-              }}
-            >
-              {t('button.translate')}
-            </Button>
-          </div>
-        </div>
-        <div className="h-full">
-          <div className="h-full">
-            <ContentTextarea
-              isTranslating={isTranslating}
-              value={result}
-              readOnly
-            />
-            <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
+                  translate(transRequest);
+                }}
+              >
+                {t('button.translate')}
+              </Button>
+            </>
+          }
+        />
+        <ContentTextarea
+          isTranslating={isTranslating}
+          value={result}
+          readOnly
+          footer={
+            <>
               <div className="text-sm text-muted-foreground">
                 {result.length}
               </div>
@@ -260,9 +257,9 @@ const TranslatorMainContent = () => {
                   }
                 }}
               />
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
       </div>
     </div>
   );
