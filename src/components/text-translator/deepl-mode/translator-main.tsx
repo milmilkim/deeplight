@@ -1,16 +1,10 @@
-import PSelect from '../../p-select';
 import { Button } from '../../ui/button';
-import { Textarea } from '../../ui/textarea';
-import { ArrowLeftRight } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
 import { SourceLanguageCode, type TextResult } from 'deepl-node';
 import { useMutation } from '@tanstack/react-query';
-import { Option } from '@/components/p-select';
 import {
-  sourceLanguages,
   swapLangCode,
-  targetLanguages,
 } from '@/config/languages';
 import { DeepLTranslateRequest } from '@/types/api';
 import {

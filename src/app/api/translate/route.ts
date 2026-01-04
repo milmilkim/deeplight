@@ -1,11 +1,11 @@
-import { TranslateRequest } from '@/types/api';
+import { DeepLTranslateRequest } from '@/types/api';
 import * as deepl from 'deepl-node';
 
 export async function POST(req: Request) {
   const apiKey = req.headers.get('x-api-key');
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
-  const body = (await req.json()) as TranslateRequest;
+  const body = (await req.json()) as DeepLTranslateRequest;
   console.log(body);
 
   const deeplClient = new deepl.DeepLClient(apiKey);
