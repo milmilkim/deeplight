@@ -1,13 +1,17 @@
 import PSelect from '../../p-select';
 import { Button } from '../../ui/button';
 import { Textarea } from '../../ui/textarea';
-import { ArrowLeftRight, Clipboard } from 'lucide-react';
+import { ArrowLeftRight } from 'lucide-react';
 import axios from 'axios';
 import { useConfigStore } from '@/stores/configStore';
 import { SourceLanguageCode, type TextResult } from 'deepl-node';
 import { useMutation } from '@tanstack/react-query';
 import { Option } from '@/components/p-select';
-import { sourceLanguages, swapLangCode, targetLanguages } from '@/config/languages';
+import {
+  sourceLanguages,
+  swapLangCode,
+  targetLanguages,
+} from '@/config/languages';
 import { DeepLTranslateRequest } from '@/types/api';
 import {
   useTextTranslate,
@@ -15,18 +19,16 @@ import {
 } from '@/contexts/text-translate-context';
 import AdvancedSettings from './advanced-settings';
 import { useTranslations } from 'next-intl';
+import CopyButton from '../copy-button';
+import LanguageSelector from '../language-selector';
+import ContentTextarea from '../content-textarea';
 
 const MAX_BYTES = 100 * 1024;
 
-const CopyButton = ({ onClick }: { onClick: () => void }) => (
-  <div className="sticky bottom-0">
-    <Button variant={'ghost'} size={'icon'} onClick={onClick}>
-      <Clipboard />
-    </Button>
-  </div>
-);
-
-const getTranslate = async (transRequest: DeepLTranslateRequest, apiKey: string) => {
+const getTranslate = async (
+  transRequest: DeepLTranslateRequest,
+  apiKey: string,
+) => {
   const { data } = await axios.post<TextResult>(
     '/api/translate',
     transRequest,
@@ -34,7 +36,6 @@ const getTranslate = async (transRequest: DeepLTranslateRequest, apiKey: string)
   );
   return data;
 };
-
 
 const TranslatorMainContent = () => {
   const {
@@ -48,9 +49,7 @@ const TranslatorMainContent = () => {
 
   const { config } = useConfigStore();
 
-
   const t = useTranslations('textTranslate');
-  const tLang = useTranslations('lang');
 
   const { mutate: translate, isPending: isTranslating } = useMutation<
     {
@@ -120,27 +119,30 @@ const TranslatorMainContent = () => {
     },
   });
 
-  const sourceLanguageOptions: Option[] = [
-    ...(sourceLanguages
-      ?.map((lang) => ({
-        label: tLang(lang.code),
-        value: lang.code,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) || []),
-  ];
-
-  const targetLanguageOptions: Option[] =
-    targetLanguages
-      ?.map((lang) => ({
-        label: tLang(lang.code),
-        value: lang.code,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) || [];
-
   const handleChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     setTransRequest({ ...transRequest, [e.target.name]: e.target.value });
+  };
+
+  const handleClickSwap = () => {
+    const prevSourceLang = transRequest.sourceLang;
+    const prevTargetLang = transRequest.targetLang;
+    const prevText = transRequest.text;
+    const prevResult = result;
+
+    const { newSource, newTarget } = swapLangCode(
+      prevSourceLang,
+      prevTargetLang,
+    );
+
+    setTransRequest({
+      ...transRequest,
+      sourceLang: newSource,
+      targetLang: newTarget,
+      text: prevResult, // 번역 결과를 입력란으로
+    });
+    setResult(prevText); // 입력값을 결과란으로
   };
 
   function splitByBytes(str: string, maxBytes: number): string[] {
@@ -169,65 +171,28 @@ const TranslatorMainContent = () => {
         <AdvancedSettings />
       </div>
       <div className="flex col-span-2 gap-1 w-full">
-        <div className="flex-1 flex justify-end">
-          <PSelect
-            className="w-full sm:w-[180px]"
-            options={sourceLanguageOptions}
-            placeholder={t('autoDetect')}
-            onChange={(value) => {
-              setTransRequest({ ...transRequest, sourceLang: value });
-            }}
-            value={transRequest.sourceLang}
-            disalbed={isTranslating}
-          />
-        </div>
-        <Button
-          variant={'ghost'}
-          onClick={() => {
-            const prevSourceLang = transRequest.sourceLang;
-            const prevTargetLang = transRequest.targetLang;
-            const prevText = transRequest.text;
-            const prevResult = result;
-
-            const { newSource, newTarget } = swapLangCode(
-              prevSourceLang,
-              prevTargetLang,
-            );
-
-            setTransRequest({
-              ...transRequest,
-              sourceLang: newSource,
-              targetLang: newTarget,
-              text: prevResult, // 번역 결과를 입력란으로
-            });
-            setResult(prevText); // 입력값을 결과란으로
+        <LanguageSelector
+          onSourceLanguageChange={(value) => {
+            setTransRequest({ ...transRequest, sourceLang: value });
           }}
-        >
-          <ArrowLeftRight />
-        </Button>
-        <div className="flex-1">
-          <PSelect
-            className="w-full sm:w-[180px]"
-            options={targetLanguageOptions}
-            onChange={(value) => {
-              setTransRequest({ ...transRequest, targetLang: value });
-            }}
-            value={transRequest.targetLang}
-            disalbed={isTranslating}
-            placeholder={t('placeholder.targetLanguage')}
-          />
-        </div>
+          onTargetLanguageChange={(value) => {
+            setTransRequest({ ...transRequest, targetLang: value });
+          }}
+          sourceLanguageValue={transRequest.sourceLang}
+          targetLanguageValue={transRequest.targetLang}
+          isTranslating={isTranslating}
+          onClickSwap={() => handleClickSwap()}
+        />
       </div>
       <div className="sm:grid sm:grid-cols-2 gap-2 mt-2">
         <div className="h-full">
-          <Textarea
+          <ContentTextarea
             placeholder={t('placeholder.text')}
-            className="h-full min-h-64"
-            name="text"
-            disabled={isTranslating}
+            isTranslating={isTranslating}
             value={transRequest.text}
             onChange={handleChange}
           />
+
           <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
             <div className="text-sm text-muted-foreground">
               {transRequest.text.length}
@@ -274,25 +239,28 @@ const TranslatorMainContent = () => {
           </div>
         </div>
         <div className="h-full">
-          <Textarea
-            placeholder=""
-            value={result}
-            readOnly
-            className="h-full min-h-64"
-          />
-          <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
-            <div className="text-sm text-muted-foreground">{result.length}</div>
-            <CopyButton
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(result);
-                  alert(t('alert.copySuccess'));
-                } catch (error) {
-                  alert(t('alert.copyError'));
-                  console.error(error);
-                }
-              }}
+          <div className="h-full">
+            <ContentTextarea
+              isTranslating={isTranslating}
+              value={result}
+              readOnly
             />
+            <div className="sticky bottom-0 mt-2 flex items-center gap-1 justify-end">
+              <div className="text-sm text-muted-foreground">
+                {result.length}
+              </div>
+              <CopyButton
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(result);
+                    alert(t('alert.copySuccess'));
+                  } catch (error) {
+                    alert(t('alert.copyError'));
+                    console.error(error);
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
