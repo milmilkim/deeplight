@@ -62,7 +62,17 @@ const TranslatorMainContent = () => {
     mutationFn: (variables) => {
       const state = useConfigStore.getState();
       const apiKey = state.config.llmConfig.googleConfig.apiKey;
-      return getTranslate(variables, apiKey);
+
+      // Include config settings in the request
+      const requestWithConfig: AiTranslateRequest = {
+        ...variables,
+        temperature: state.config.translatorConfig.modelOptions?.temperature ?? 0.2,
+        reasoning_effort: state.config.translatorConfig.modelOptions?.reasoning_effort ?? 'low',
+        model: state.config.translatorConfig.model ?? 'gemini-3-flash-preview',
+        baseUrl: state.config.translatorConfig.baseUrl,
+      };
+
+      return getTranslate(requestWithConfig, apiKey);
     },
     onSuccess: (data) => {
       setResult(data.choices[0]?.message?.content ?? '');

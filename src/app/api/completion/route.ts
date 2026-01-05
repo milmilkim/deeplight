@@ -1,5 +1,7 @@
 import { AiTranslateRequest } from '@/types/api';
+import { DEFAULT_CONFIG } from '@/types/global-config';
 import OpenAI from 'openai';
+
 
 export async function POST(req: Request) {
   const apiKey = req.headers.get('x-api-key');
@@ -9,15 +11,14 @@ export async function POST(req: Request) {
 
   const client = new OpenAI({
     apiKey: apiKey,
-    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseURL: body.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/',
   });
 
   try {
     const completion = await client.chat.completions.create({
       model: body.model,
-      temperature: 0.2,
-      reasoning_effort: 'low',
-      max_completion_tokens: 4000,
+      temperature: body.temperature ?? DEFAULT_CONFIG?.translatorConfig?.modelOptions?.temperature ?? 0.2,
+      reasoning_effort: body.reasoning_effort ?? DEFAULT_CONFIG?.translatorConfig?.modelOptions?.reasoning_effort ?? 'minimal',
 
       messages: [
         {

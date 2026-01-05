@@ -1,4 +1,5 @@
 import { TranslateTextOptions } from 'deepl-node';
+import { CompletionParameters } from './global-config';
 
 export interface DeepLTranslateRequest extends TranslateTextOptions {
   text: string;
@@ -7,11 +8,10 @@ export interface DeepLTranslateRequest extends TranslateTextOptions {
   targetLang: string;
 }
 
-export interface AiTranslateRequest {
+export interface AiTranslateRequest extends CompletionParameters {
   text: string;
-  context?: string;
   sourceLang: string;
   targetLang: string;
   model: string;
-  baseUrl: string;
+  baseUrl?: string;
 }

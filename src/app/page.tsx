@@ -69,7 +69,7 @@ const Nav = () => {
       <NavigationMenuList>
         <NavItem name="AI MODE" onClick={() => context?.setAppMode('LLM')} />
         <NavItem
-          name="DeepL MODE"
+          name="DeepL MODE (Legacy)"
           onClick={() => context?.setAppMode('DEEPL')}
         />
       </NavigationMenuList>

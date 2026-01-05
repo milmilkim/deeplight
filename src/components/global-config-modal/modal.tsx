@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Eye, EyeOff, RefreshCcw, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -10,13 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
-import { Label } from '../ui/label';
 import { useConfigStore } from '../../stores/configStore';
 import { useTranslations } from 'next-intl';
 import DeepL from './deepl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Google from './google';
-import { GlobalConfig } from '@/types/global-config';
+import OpenAi from './openai';
+import { useConfigUpdater } from '@/hooks/useConfigUpdater';
+import General from './general';
 
 const Config = () => {
   const [open, setOpen] = useState(false);
@@ -25,18 +26,38 @@ const Config = () => {
 
   const t = useTranslations('common');
 
-  const handleSave = async () => {
+  // Sync tempConfig when config changes or modal opens
+  useEffect(() => {
+    if (open) {
+      setTempConfig(config);
+    }
+  }, [config, open]);
+
+  const handleSave = () => {
     updateConfig(tempConfig);
     setOpen(false);
   };
 
-  const updateTempConfig = (newConfig: Partial<GlobalConfig>) => {
-    setTempConfig({ ...tempConfig, ...newConfig });
-  };
+  // 공통 훅으로 각 프로바이더별 updater 생성
+  const updateOpenAIConfig = useConfigUpdater(
+    setTempConfig,
+    (draft) => draft.llmConfig.openAIConfig,
+  );
 
-  useEffect(() => {
-    setTempConfig(config);
-  }, [config]);
+  const updateGoogleConfig = useConfigUpdater(
+    setTempConfig,
+    (draft) => draft.llmConfig.googleConfig,
+  );
+
+  const updateDeepLConfig = useConfigUpdater(
+    setTempConfig,
+    (draft) => draft.deepLConfig,
+  );
+
+  const updateTranslatorConfig = useConfigUpdater(
+    setTempConfig,
+    (draft) => draft.translatorConfig,
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -45,48 +66,58 @@ const Config = () => {
           <Settings className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="mb-4">{t('config.header')}</DialogTitle>
-          <div className="flex w-full flex-col">
-            <div className="w-full max-w-sm items-center gap-3">
-              <Tabs defaultValue="account">
-                <TabsList>
-                  <TabsTrigger value="deepl">DeepL</TabsTrigger>
-                  <TabsTrigger value="google">Google</TabsTrigger>
-                  {/* <TabsTrigger value="openai">Open AI</TabsTrigger>
-                  <TabsTrigger value="custom">Custom API</TabsTrigger> */}
-                </TabsList>
-                <div className="mt-1">
-                  <TabsContent value="deepl">
-                    <DeepL
-                      updateTempConfig={updateTempConfig}
-                      tempConfig={tempConfig}
-                    />
-                  </TabsContent>
-                  <TabsContent value="google">
-                    <Google
-                      updateTempConfig={updateTempConfig}
-                      tempConfig={tempConfig}
-                    />
-                  </TabsContent>
-                  {/* <TabsContent value="openai">
-                    <OpenAI />
-                  </TabsContent>
-                  <TabsContent value="custom">
-                    <Custom />
-                  </TabsContent> */}
-                </div>
-              </Tabs>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">{t('cancel')}</Button>
-              </DialogClose>
-              <Button onClick={handleSave}>{t('save')}</Button>
-            </DialogFooter>
-          </div>
         </DialogHeader>
+        <div className="flex w-full flex-col overflow-y-auto flex-1 min-h-0">
+          <div className="w-full max-w-sm items-center gap-3">
+            <Tabs defaultValue="general">
+              <TabsList>
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="google">Google</TabsTrigger>
+                <TabsTrigger value="openai">Open AI</TabsTrigger>
+                {/* <TabsTrigger value="custom">Custom API</TabsTrigger> */}
+                <TabsTrigger value="deepl">DeepL</TabsTrigger>
+              </TabsList>
+              <div className="mt-1">
+                <TabsContent value="general">
+                  <General
+                    config={tempConfig.translatorConfig}
+                    updateConfig={updateTranslatorConfig}
+                  />
+                </TabsContent>
+                <TabsContent value="deepl">
+                  <DeepL
+                    config={tempConfig.deepLConfig}
+                    updateConfig={updateDeepLConfig}
+                  />
+                </TabsContent>
+                <TabsContent value="google">
+                  <Google
+                    config={tempConfig.llmConfig.googleConfig}
+                    updateConfig={updateGoogleConfig}
+                  />
+                </TabsContent>
+                <TabsContent value="openai">
+                  <OpenAi
+                    config={tempConfig.llmConfig.openAIConfig}
+                    updateConfig={updateOpenAIConfig}
+                  />
+                </TabsContent>
+                {/* <TabsContent value="custom">
+                  <Custom />
+                </TabsContent> */}
+              </div>
+            </Tabs>
+          </div>
+        </div>
+        <DialogFooter className="flex-shrink-0 mt-4">
+          <DialogClose asChild>
+            <Button variant="outline">{t('cancel')}</Button>
+          </DialogClose>
+          <Button onClick={handleSave}>{t('save')}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,5 @@
+import OpenAI from 'openai';
+
 export type LLMProvider = 'openai' | 'google' | 'custom';
 
 export interface CustomProvider {
@@ -8,8 +10,21 @@ export interface CustomProvider {
   model: string;
 }
 
-interface ProviderConfig {
+export interface ProviderConfig {
   apiKey: string;
+}
+
+export interface CompletionParameters {
+  temperature: number;
+  reasoning_effort: OpenAI.ReasoningEffort;
+}
+
+export interface TranslatorConfig {
+  modelOptions: Partial<CompletionParameters>;
+  languages: string[];
+  prompts: string[];
+  model: string;
+  baseUrl: string;
 }
 
 export interface GlobalConfig {
@@ -18,8 +33,10 @@ export interface GlobalConfig {
   };
   llmConfig: {
     googleConfig: ProviderConfig;
+    openAIConfig: ProviderConfig;
   };
   customProviders: CustomProvider[];
+  translatorConfig: Partial<TranslatorConfig>;
 }
 
 export const DEFAULT_CONFIG: GlobalConfig = {
@@ -30,6 +47,19 @@ export const DEFAULT_CONFIG: GlobalConfig = {
     googleConfig: {
       apiKey: '',
     },
+    openAIConfig: {
+      apiKey: '',
+    },
   },
   customProviders: [],
+
+  translatorConfig: {
+    modelOptions: {
+      temperature: 0.2,
+      reasoning_effort: 'minimal'
+    },
+    model: 'gemini-3-flash-preview',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    languages: ['ko', 'en'],
+  },
 };

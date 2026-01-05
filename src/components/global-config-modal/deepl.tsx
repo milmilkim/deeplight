@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { useTranslations } from 'next-intl';
-import { GlobalConfig } from '@/types/global-config';
 import { Button } from '../ui/button';
 import { Eye, EyeOff, RefreshCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -11,29 +10,25 @@ import { Usage } from 'deepl-node';
 import { Progress } from '../ui/progress';
 
 interface DeepLProps {
-  updateTempConfig: (newConfig: Partial<GlobalConfig>) => void;
-  tempConfig: GlobalConfig;
+  config: { apiKey: string };
+  updateConfig: (updates: Partial<{ apiKey: string }>) => void;
 }
 
-const DeepL = ({ updateTempConfig, tempConfig }: DeepLProps) => {
+const DeepL = ({ config, updateConfig }: DeepLProps) => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const t = useTranslations('common');
 
   const getUsage = async () => {
     const { data } = await axios.get<Usage>('/api/usage', {
       headers: {
-        'x-api-key': tempConfig.deepLConfig.apiKey,
+        'x-api-key': config.apiKey,
       },
     });
     return data;
   };
 
   const handleChangeApiKey = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateTempConfig({
-      deepLConfig: {
-        apiKey: e.target.value,
-      },
-    });
+    updateConfig({ apiKey: e.target.value });
   };
 
   const {
@@ -43,7 +38,7 @@ const DeepL = ({ updateTempConfig, tempConfig }: DeepLProps) => {
   } = useQuery({
     queryKey: ['usage'],
     queryFn: () => getUsage(),
-    enabled: !!tempConfig.deepLConfig.apiKey,
+    enabled: !!config.apiKey,
   });
 
   return (
@@ -56,7 +51,7 @@ const DeepL = ({ updateTempConfig, tempConfig }: DeepLProps) => {
             type={apiKeyVisible ? 'text' : 'password'}
             id="api-key"
             placeholder={t('config.apiKey')}
-            value={tempConfig.deepLConfig.apiKey}
+            value={config.apiKey ?? ''}
             onChange={handleChangeApiKey}
             name="apiKey"
           />

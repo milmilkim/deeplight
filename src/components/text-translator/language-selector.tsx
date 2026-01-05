@@ -7,6 +7,7 @@ import {
 import { Option } from '@/components/p-select';
 import { Button } from '../ui/button';
 import { ArrowLeftRight } from 'lucide-react';
+import { useConfigStore } from '@/stores/configStore';
 
 interface LanguageSelectorProps {
   onSourceLanguageChange?: (value: string) => void;
@@ -27,10 +28,15 @@ const LanguageSelector = ({
 }: LanguageSelectorProps) => {
   const t = useTranslations('textTranslate');
   const tLang = useTranslations('lang');
+  const { config } = useConfigStore();
+
+  // Filter languages based on config settings
+  const enabledLanguages = config.translatorConfig.languages ?? ['ko', 'en'];
 
   const sourceLanguageOptions: Option[] = [
     ...(sourceLanguages
-      ?.map((lang) => ({
+      ?.filter((lang) => enabledLanguages.includes(lang.code))
+      .map((lang) => ({
         label: tLang(lang.code),
         value: lang.code,
       }))
@@ -39,7 +45,13 @@ const LanguageSelector = ({
 
   const targetLanguageOptions: Option[] =
     targetLanguages
-      ?.map((lang) => ({
+      ?.filter((lang) => {
+        // For target languages, check if the base code is enabled
+        // e.g., 'en-US' should be enabled if 'en' is in enabledLanguages
+        const baseCode = lang.code.split('-')[0];
+        return enabledLanguages.includes(baseCode) || enabledLanguages.includes(lang.code);
+      })
+      .map((lang) => ({
         label: tLang(lang.code),
         value: lang.code,
       }))

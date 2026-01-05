@@ -2,31 +2,26 @@ import React, { useState } from 'react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { useTranslations } from 'next-intl';
-import { GlobalConfig } from '@/types/global-config';
+import { ProviderConfig } from '@/types/global-config';
 import { Button } from '../ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface GoogleProps {
-  updateTempConfig: (newConfig: Partial<GlobalConfig>) => void;
-  tempConfig: GlobalConfig;
+  config: ProviderConfig;
+  updateConfig: (updates: Partial<ProviderConfig>) => void;
 }
 
-const Google = ({ tempConfig, updateTempConfig }: GoogleProps) => {
+const Google = ({ config, updateConfig }: GoogleProps) => {
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const t = useTranslations('common');
 
   const handleChangeApiKey = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateTempConfig({
-      llmConfig: {
-        googleConfig: {
-          apiKey: e.target.value,
-        },
-      },
-    });
+    updateConfig({ apiKey: e.target.value });
   };
+  
   return (
     <div className="flex w-full flex-col">
-      <div className=" text-lg font-bold">DeepL</div>
+      <div className=" text-lg font-bold">Google</div>
       <div className="w-full max-w-sm items-center gap-3 mt-4">
         <Label htmlFor="api-key">{t('config.apiKey')}</Label>
         <div className="flex items-center gap-2 mt-2">
@@ -34,7 +29,7 @@ const Google = ({ tempConfig, updateTempConfig }: GoogleProps) => {
             type={apiKeyVisible ? 'text' : 'password'}
             id="api-key"
             placeholder={t('config.apiKey')}
-            value={tempConfig.llmConfig.googleConfig.apiKey}
+            value={config.apiKey ?? ''}
             onChange={handleChangeApiKey}
             name="apiKey"
           />
