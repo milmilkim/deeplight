@@ -96,7 +96,7 @@ const Nav = () => {
         isActive={context?.appMode === 'DEEPL'}
         onClick={() => context?.setAppMode('DEEPL')}
       >
-        DeepL <span className="text-[10px] text-muted-foreground/50">(legacy)</span>
+        DeepL
       </NavTab>
     </div>
   );
