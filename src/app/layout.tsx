@@ -7,7 +7,7 @@ import { getLocale } from 'next-intl/server';
 // 메타데이터 설정
 export const metadata: Metadata = {
   title: 'DeepLight',
-  description: 'DeepL API 프론트엔드',
+  description: 'LLM과 DeepL API를 활용한 웹 기반 번역 애플리케이션',
 };
 
 export default async function RootLayout({
