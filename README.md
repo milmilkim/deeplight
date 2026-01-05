@@ -3,6 +3,14 @@
 **DeepLight**는 LLM(Large Language Model)과 DeepL API를 활용한 웹 기반 번역 애플리케이션입니다.
 단순한 텍스트 변환을 넘어, 시스템 프롬프트를 통해 번역의 어조와 스타일을 제어할 수 있는 맞춤형 번역 경험을 제공합니다.
 
+<img width="1054" height="748" alt="image" src="https://github.com/user-attachments/assets/85b14fb1-28c2-4d84-acb3-413f061a229f" />
+<img width="1043" height="725" alt="image" src="https://github.com/user-attachments/assets/d6e9dc51-4605-4ef8-ad75-3e7e3cf14133" />
+<img width="1019" height="736" alt="image" src="https://github.com/user-attachments/assets/adc442dc-1239-4f20-976f-83af471eea80" />
+<img width="564" height="694" alt="image" src="https://github.com/user-attachments/assets/af83d4eb-12b4-4591-b5a7-f93492359a31" />
+
+
+
+
 ## 🔗 배포 (Demo)
 
 [https://deeplight.vercel.app](https://deeplight.vercel.app)
