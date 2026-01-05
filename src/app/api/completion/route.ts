@@ -64,10 +64,20 @@ export async function POST(req: Request) {
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
   const body = (await req.json()) as AiTranslateRequest;
+  console.log(body);
+  console.log(apiKey);
+
+  let baseUrl = body.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/';
+  // Remove /chat/completions suffix if present (common user error)
+  baseUrl = baseUrl.replace(/\/chat\/completions\/?$/, '');
+
+  if (!baseUrl.endsWith('/')) {
+    baseUrl += '/';
+  }
 
   const client = new OpenAI({
     apiKey: apiKey,
-    baseURL: body.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseURL: baseUrl,
     timeout: 15 * 60 * 1000, // 15 minutes timeout
   });
 
@@ -75,8 +85,6 @@ export async function POST(req: Request) {
   // Client is responsible for providing the full system prompt (main + fragments)
   const promptTemplate = body.systemPrompt || '';
   const systemMessageContent = processSystemPrompt(promptTemplate, body.sourceLang, body.targetLang);
-
-  console.log(systemMessageContent)
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
@@ -107,7 +115,7 @@ export async function POST(req: Request) {
       // If body is missing (gzip issue), try raw fetch to get actual error
       if (err.message.includes('no body')) {
         try {
-          const baseUrl = body.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/';
+          // Use normalized baseUrl from outer scope
           const rawResponse = await fetch(`${baseUrl}chat/completions`, {
             method: 'POST',
             headers: {

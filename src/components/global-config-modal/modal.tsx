@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Google from './google';
 import OpenAi from './openai';
 import { useConfigUpdater } from '@/hooks/useConfigUpdater';
+import Custom from './custom';
 import General from './general';
 
 const Config = () => {
@@ -59,6 +60,11 @@ const Config = () => {
     (draft) => draft.translatorConfig,
   );
 
+  const updateCustomProviders = useConfigUpdater(
+    setTempConfig,
+    (draft) => draft.customProviders,
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -77,7 +83,7 @@ const Config = () => {
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="google">Google</TabsTrigger>
                 <TabsTrigger value="openai">Open AI</TabsTrigger>
-                {/* <TabsTrigger value="custom">Custom API</TabsTrigger> */}
+                <TabsTrigger value="custom">Custom API</TabsTrigger>
                 <TabsTrigger value="deepl">DeepL</TabsTrigger>
               </TabsList>
               <div className="mt-4 flex-1 h-full min-h-0">
@@ -85,6 +91,7 @@ const Config = () => {
                   <General
                     config={tempConfig.translatorConfig}
                     updateConfig={updateTranslatorConfig}
+                    customProviders={tempConfig.customProviders}
                   />
                 </TabsContent>
                 <TabsContent value="deepl">
@@ -103,6 +110,12 @@ const Config = () => {
                   <OpenAi
                     config={tempConfig.llmConfig.openAIConfig}
                     updateConfig={updateOpenAIConfig}
+                  />
+                </TabsContent>
+                <TabsContent value="custom">
+                  <Custom
+                    customProviders={tempConfig.customProviders}
+                    updateCustomProviders={updateCustomProviders}
                   />
                 </TabsContent>
               </div>

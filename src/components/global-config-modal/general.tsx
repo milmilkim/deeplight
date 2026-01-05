@@ -1,4 +1,4 @@
-import { TranslatorConfig, AVAILABLE_MODELS } from '@/types/global-config';
+import { TranslatorConfig, AVAILABLE_MODELS, CustomProvider } from '@/types/global-config';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import PSelect from '../p-select';
@@ -12,9 +12,10 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 interface GeneralProps {
   config: Partial<TranslatorConfig>;
   updateConfig: (updates: Partial<TranslatorConfig>) => void;
+  customProviders?: CustomProvider[];
 }
 
-const General = ({ config, updateConfig }: GeneralProps) => {
+const General = ({ config, updateConfig, customProviders = [] }: GeneralProps) => {
   const tLang = useTranslations('lang');
   const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
 
@@ -48,6 +49,16 @@ const General = ({ config, updateConfig }: GeneralProps) => {
 
   const selectedCount = (config.languages ?? ['ko', 'en']).length;
   const selectedModelsCount = (config.enabledModels ?? []).length;
+
+  const allModels = [
+    ...AVAILABLE_MODELS,
+    ...customProviders.map((cp) => ({
+      id: cp.id,
+      name: cp.name,
+      provider: 'custom' as const, // 'custom' is now part of ModelInfo provider type
+      baseUrl: cp.baseUrl,
+    })),
+  ];
 
   return (
     <div className="flex w-full flex-col">
@@ -112,7 +123,7 @@ const General = ({ config, updateConfig }: GeneralProps) => {
             <Label>Models ({selectedModelsCount} enabled)</Label>
           </div>
           <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto border rounded-md p-3">
-            {AVAILABLE_MODELS.map((model) => {
+            {allModels.map((model) => {
               const isSelected = (config.enabledModels ?? []).includes(model.id);
               return (
                 <div key={model.id} className="flex items-center space-x-2">

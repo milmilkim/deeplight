@@ -4,10 +4,10 @@ export type LLMProvider = 'openai' | 'google' | 'custom';
 
 export interface CustomProvider {
   id: string;
-  alias: string;
+  name: string;
   baseUrl: string;
   apiKey: string;
-  model: string;
+  model: string; // The model ID sent to the API
 }
 
 export interface ProviderConfig {
@@ -111,7 +111,7 @@ export const DEFAULT_CONFIG: GlobalConfig = {
 export interface ModelInfo {
   id: string;
   name: string;
-  provider: 'google' | 'openai';
+  provider: 'google' | 'openai' | 'custom';
   baseUrl: string;
   capabilities?: {
     supportsReasoningEffort?: boolean;

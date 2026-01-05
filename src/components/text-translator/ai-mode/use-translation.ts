@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { useConfigStore } from '@/stores/configStore';
 import { AiTranslateRequest } from '@/types/api';
 import { isApiErrorResponse } from '@/types/api-error';
-import { AVAILABLE_MODELS } from '@/types/global-config';
+import { AVAILABLE_MODELS, CustomProvider } from '@/types/global-config';
 import { DEFAULT_TRANSLATOR_PROMPT } from '@/config/constans';
 
 const getTranslate = async (
@@ -53,7 +53,22 @@ export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => 
                 state.config.translatorConfig.model ?? 'gemini-3-flash-preview';
 
             // Find the model info to determine the provider
-            const modelInfo = AVAILABLE_MODELS.find((m) => m.id === currentModel);
+            let modelInfo = AVAILABLE_MODELS.find((m) => m.id === currentModel);
+            let customProvider: CustomProvider | undefined;
+
+            if (!modelInfo) {
+                // Check custom providers
+                customProvider = state.config.customProviders?.find((p) => p.id === currentModel);
+                if (customProvider) {
+                    modelInfo = {
+                        id: customProvider.id,
+                        name: customProvider.name,
+                        provider: 'custom',
+                        baseUrl: customProvider.baseUrl,
+                    };
+                }
+            }
+
             const provider = modelInfo?.provider ?? 'google';
 
             // Get the correct API key and reasoning_effort based on provider
@@ -64,10 +79,13 @@ export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => 
                 apiKey = state.config.llmConfig.googleConfig.apiKey;
                 reasoningEffort =
                     state.config.llmConfig.googleConfig.modelOptions?.reasoning_effort;
-            } else {
+            } else if (provider === 'openai') {
                 apiKey = state.config.llmConfig.openAIConfig.apiKey;
                 reasoningEffort =
                     state.config.llmConfig.openAIConfig.modelOptions?.reasoning_effort;
+            } else if (provider === 'custom' && customProvider) {
+                apiKey = customProvider.apiKey;
+                // Custom providers usually don't support reasoning_effort unless specified, ignoring for now or could add to custom settings
             }
 
             // --- SYSTEM PROMPT GENERATION ---
@@ -111,9 +129,9 @@ export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => 
                 temperature: state.config.translatorConfig.temperature ?? 0.2,
                 reasoning_effort: effectiveReasoningEffort,
                 serviceTier: effectiveServiceTier,
-                model: currentModel,
+                model: (provider === 'custom' && customProvider) ? customProvider.model : currentModel,
                 systemPrompt: fullSystemPrompt, // Combined Prompt
-                baseUrl: state.config.translatorConfig.baseUrl,
+                baseUrl: (provider === 'custom' && customProvider) ? customProvider.baseUrl : state.config.translatorConfig.baseUrl,
             };
 
             return getTranslate(requestWithConfig, apiKey);
