@@ -1,5 +1,5 @@
 import { TranslateTextOptions } from 'deepl-node';
-import { CompletionParameters } from './global-config';
+import OpenAI from 'openai';
 
 export interface DeepLTranslateRequest extends TranslateTextOptions {
   text: string;
@@ -8,10 +8,13 @@ export interface DeepLTranslateRequest extends TranslateTextOptions {
   targetLang: string;
 }
 
-export interface AiTranslateRequest extends CompletionParameters {
+export interface AiTranslateRequest {
   text: string;
   sourceLang: string;
   targetLang: string;
   model: string;
+  temperature?: number;
+  reasoning_effort?: OpenAI.ReasoningEffort;
+  serviceTier?: 'auto' | 'flex';
   baseUrl?: string;
 }

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import CopyButton from '../copy-button';
 import ContentTextarea from '../content-textarea';
 import LanguageSelector from '../language-selector';
+import ModelSelector from '../model-selector';
 import {
   AiTextTranslateProvider,
   useAiTextTranslate,
@@ -12,6 +13,8 @@ import { swapLangCode } from '@/config/languages';
 import { useMutation } from '@tanstack/react-query';
 import { AiTranslateRequest } from '@/types/api';
 import { useConfigStore } from '@/stores/configStore';
+import { AVAILABLE_MODELS } from '@/types/global-config';
+import { ApiErrorResponse, isApiErrorResponse } from '@/types/api-error';
 import OpenAI from 'openai';
 
 const TranslatorMainContent = () => {
@@ -44,14 +47,33 @@ const TranslatorMainContent = () => {
     requestParams: AiTranslateRequest,
     apiKey: string,
   ): Promise<OpenAI.ChatCompletion> => {
-    const { data } = await axios.post<OpenAI.ChatCompletion>(
-      '/api/completion',
-      requestParams,
-      {
-        headers: { 'x-api-key': apiKey },
-      },
-    );
-    return data;
+    try {
+      const { data } = await axios.post<OpenAI.ChatCompletion>(
+        '/api/completion',
+        requestParams,
+        {
+          headers: { 'x-api-key': apiKey },
+        },
+      );
+      return data;
+    } catch (error) {
+      // Extract error message from axios error response
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const errorData = error.response.data;
+        if (isApiErrorResponse(errorData)) {
+          // Format: "Error: Message (CODE: STATUS)"
+          let message = errorData.error;
+          if (errorData.code || errorData.status) {
+            const details = [];
+            if (errorData.code) details.push(`${errorData.code}`);
+            if (errorData.status) details.push(errorData.status);
+            message += ` (${details.join(': ')})`;
+          }
+          throw new Error(message);
+        }
+      }
+      throw error;
+    }
   };
 
   const { mutate: translate, isPending: isTranslating } = useMutation<
@@ -61,14 +83,30 @@ const TranslatorMainContent = () => {
   >({
     mutationFn: (variables) => {
       const state = useConfigStore.getState();
-      const apiKey = state.config.llmConfig.googleConfig.apiKey;
+      const currentModel = state.config.translatorConfig.model ?? 'gemini-3-flash-preview';
+
+      // Find the model info to determine the provider
+      const modelInfo = AVAILABLE_MODELS.find((m) => m.id === currentModel);
+      const provider = modelInfo?.provider ?? 'google';
+
+      // Get the correct API key and reasoning_effort based on provider
+      let apiKey = '';
+      let reasoningEffort: OpenAI.ReasoningEffort | undefined;
+
+      if (provider === 'google') {
+        apiKey = state.config.llmConfig.googleConfig.apiKey;
+        reasoningEffort = state.config.llmConfig.googleConfig.modelOptions?.reasoning_effort;
+      } else {
+        apiKey = state.config.llmConfig.openAIConfig.apiKey;
+        reasoningEffort = state.config.llmConfig.openAIConfig.modelOptions?.reasoning_effort;
+      }
 
       // Include config settings in the request
       const requestWithConfig: AiTranslateRequest = {
         ...variables,
-        temperature: state.config.translatorConfig.modelOptions?.temperature ?? 0.2,
-        reasoning_effort: state.config.translatorConfig.modelOptions?.reasoning_effort ?? 'low',
-        model: state.config.translatorConfig.model ?? 'gemini-3-flash-preview',
+        temperature: state.config.translatorConfig.temperature ?? 0.2,
+        reasoning_effort: reasoningEffort,
+        model: currentModel,
         baseUrl: state.config.translatorConfig.baseUrl,
       };
 
@@ -78,7 +116,8 @@ const TranslatorMainContent = () => {
       setResult(data.choices[0]?.message?.content ?? '');
     },
     onError: (error) => {
-      alert(error.message);
+      const errorMessage = error.message || 'Translation failed';
+      alert(errorMessage);
       setResult('');
     },
   });
@@ -108,6 +147,8 @@ const TranslatorMainContent = () => {
           placeholder={t('placeholder.text')}
           footer={
             <>
+              <ModelSelector />
+              <div className="flex-1" />
               <CopyButton
                 onClick={async () => {
                   try {

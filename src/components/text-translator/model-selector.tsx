@@ -1,0 +1,68 @@
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { useConfigStore } from '@/stores/configStore';
+import { AVAILABLE_MODELS } from '@/types/global-config';
+import { CheckCircle2, XCircle } from 'lucide-react';
+import { useMemo } from 'react';
+
+export default function ModelSelector() {
+    const config = useConfigStore((state) => state.config);
+    const updateTranslatorConfig = useConfigStore((state) => state.updateTranslatorConfig);
+    const currentModel = config.translatorConfig.model ?? 'gemini-3-flash-preview';
+
+    // API KEY 있으면 표시
+    const getApiKeyStatus = (provider: 'google' | 'openai') => {
+        if (provider === 'google') {
+            const hasKey = !!config.llmConfig.googleConfig.apiKey && config.llmConfig.googleConfig.apiKey.trim().length > 0;
+            return hasKey;
+        }
+        const hasKey = !!config.llmConfig.openAIConfig.apiKey && config.llmConfig.openAIConfig.apiKey.trim().length > 0;
+        return hasKey;
+    };
+
+    const handleModelChange = (modelId: string) => {
+        const model = AVAILABLE_MODELS.find((m) => m.id === modelId);
+        if (model) {
+            updateTranslatorConfig({
+                model: model.id,
+                baseUrl: model.baseUrl,
+            });
+        }
+    };
+
+    // Filter models based on enabledModels in config
+    const enabledModels = useMemo(() => {
+        const enabledIds = config.translatorConfig.enabledModels ?? [];
+        return AVAILABLE_MODELS.filter((model) => enabledIds.includes(model.id));
+    }, [config.translatorConfig.enabledModels]);
+
+    return (
+        <Select value={currentModel} onValueChange={handleModelChange}>
+            <SelectTrigger className="w-[200px] h-9 text-xs">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                {enabledModels.map((model) => {
+                    const hasApiKey = getApiKeyStatus(model.provider);
+                    return (
+                        <SelectItem key={model.id} value={model.id}>
+                            <div className="flex items-center gap-2">
+                                {hasApiKey ? (
+                                    <CheckCircle2 className="w-3 h-3 text-green-500" />
+                                ) : (
+                                    <XCircle className="w-3 h-3 text-red-500" />
+                                )}
+                                <span>{model.name}</span>
+                            </div>
+                        </SelectItem>
+                    );
+                })}
+            </SelectContent>
+        </Select>
+    );
+}

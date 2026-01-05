@@ -11,13 +11,8 @@ import { TranslatorMain as AITranslatorMain } from '@/components/text-translator
 
 import Config from '@/components/global-config-modal/modal';
 import LocaleSelector from '@/components/locale-selector';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu';
-import { createContext, MouseEventHandler, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const queryClient = new QueryClient();
 
@@ -49,31 +44,49 @@ interface AppModeContextType {
 
 const AppModeContext = createContext<AppModeContextType | undefined>(undefined);
 
-const NavItem = (props: { name: string; onClick?: MouseEventHandler }) => {
-  return (
-    <NavigationMenuItem>
-      <NavigationMenuLink active={true} asChild>
-        <Button variant={'outline'} onClick={props.onClick}>
-          {props.name}
-        </Button>
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
+const NavTab = ({
+  isActive,
+  onClick,
+  children
+}: {
+  isActive: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      'text-sm transition-all',
+      isActive
+        ? 'font-semibold text-foreground underline underline-offset-4 decoration-2'
+        : 'font-normal text-muted-foreground hover:text-foreground'
+    )}
+  >
+    {children}
+  </button>
+);
 
 const Nav = () => {
   const context = useContext(AppModeContext);
 
   return (
-    <NavigationMenu viewport={false}>
-      <NavigationMenuList>
-        <NavItem name="AI MODE" onClick={() => context?.setAppMode('LLM')} />
-        <NavItem
-          name="DeepL MODE (Legacy)"
-          onClick={() => context?.setAppMode('DEEPL')}
-        />
-      </NavigationMenuList>
-    </NavigationMenu>
+    <div className="flex items-center justify-start gap-3 mb-8">
+      <NavTab
+        isActive={context?.appMode === 'LLM'}
+        onClick={() => context?.setAppMode('LLM')}
+      >
+        AI
+      </NavTab>
+
+      <span className="text-muted-foreground/30">|</span>
+
+      <NavTab
+        isActive={context?.appMode === 'DEEPL'}
+        onClick={() => context?.setAppMode('DEEPL')}
+      >
+        DeepL <span className="text-[10px] text-muted-foreground/50">(legacy)</span>
+      </NavTab>
+    </div>
   );
 };
 

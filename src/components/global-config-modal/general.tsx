@@ -1,4 +1,4 @@
-import { TranslatorConfig } from '@/types/global-config';
+import { TranslatorConfig, AVAILABLE_MODELS } from '@/types/global-config';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import PSelect from '../p-select';
@@ -20,10 +20,7 @@ const General = ({ config, updateConfig }: GeneralProps) => {
 
   const handleChangeTemperature = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateConfig({
-      modelOptions: {
-        ...config.modelOptions,
-        temperature: Number(e.target.value),
-      },
+      temperature: Number(e.target.value),
     });
   };
 
@@ -38,7 +35,19 @@ const General = ({ config, updateConfig }: GeneralProps) => {
     updateConfig({ languages: newLanguages });
   };
 
+  const handleToggleModel = (modelId: string) => {
+    const currentModels = config.enabledModels ?? [];
+    const isSelected = currentModels.includes(modelId);
+
+    const newModels = isSelected
+      ? currentModels.filter((id) => id !== modelId)
+      : [...currentModels, modelId];
+
+    updateConfig({ enabledModels: newModels });
+  };
+
   const selectedCount = (config.languages ?? ['ko', 'en']).length;
+  const selectedModelsCount = (config.enabledModels ?? []).length;
 
   return (
     <div className="flex w-full flex-col">
@@ -46,7 +55,7 @@ const General = ({ config, updateConfig }: GeneralProps) => {
       <div className="w-full max-w-sm items-center gap-3 mt-4">
         <Label htmlFor="temperature">temperature (default: 0.2)</Label>
         <Input
-          value={config?.modelOptions?.temperature ?? 0.2}
+          value={config?.temperature ?? 0.2}
           className="mt-2"
           name="temperature"
           id="temperature"
@@ -55,26 +64,6 @@ const General = ({ config, updateConfig }: GeneralProps) => {
           max="2"
           step="0.1"
           onChange={handleChangeTemperature}
-        />
-
-        <Label htmlFor="reasoning_effort" className="mt-4 block">
-          reasoning effort (default: minimal)
-        </Label>
-        <PSelect
-          value={config?.modelOptions?.reasoning_effort ?? 'minimal'}
-          onChange={(v) =>
-            updateConfig({
-              modelOptions: {
-                ...config.modelOptions,
-                reasoning_effort: v as OpenAI.ReasoningEffort,
-              },
-            })
-          }
-          className="mt-2"
-          name="reasoning_effort"
-          options={['none', 'minimal', 'low', 'medium', 'high', 'xhigh'].map(
-            (v) => ({ label: v, value: v }),
-          )}
         />
 
         <div className="mt-6">
@@ -93,7 +82,7 @@ const General = ({ config, updateConfig }: GeneralProps) => {
             )}
           </button>
           {isLanguagesOpen && (
-            <div className="mt-3 grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto border rounded-md p-3">
+            <div className="mt-3 grid grid-cols-2 gap-3 max-h-[200px] overflow-y-auto border rounded-md p-3">
               {sourceLanguages.map((lang) => {
                 const isSelected = (config.languages ?? ['ko', 'en']).includes(
                   lang.code,
@@ -116,6 +105,35 @@ const General = ({ config, updateConfig }: GeneralProps) => {
               })}
             </div>
           )}
+        </div>
+
+        <div className="mt-6">
+          <div className="flex items-center justify-between w-full text-left mb-2">
+            <Label>Models ({selectedModelsCount} enabled)</Label>
+          </div>
+          <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto border rounded-md p-3">
+            {AVAILABLE_MODELS.map((model) => {
+              const isSelected = (config.enabledModels ?? []).includes(model.id);
+              return (
+                <div key={model.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`model-${model.id}`}
+                    checked={isSelected}
+                    onCheckedChange={() => handleToggleModel(model.id)}
+                  />
+                  <label
+                    htmlFor={`model-${model.id}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+                  >
+                    <span>{model.name}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">
+                      {model.provider}
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

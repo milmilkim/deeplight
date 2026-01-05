@@ -12,16 +12,28 @@ export interface CustomProvider {
 
 export interface ProviderConfig {
   apiKey: string;
+  modelOptions?: {
+    reasoning_effort?: OpenAI.ReasoningEffort;
+  };
 }
 
-export interface CompletionParameters {
-  temperature: number;
-  reasoning_effort: OpenAI.ReasoningEffort;
+export interface OpenAIProviderConfig extends ProviderConfig {
+  modelOptions?: {
+    reasoning_effort?: OpenAI.ReasoningEffort;
+    serviceTier?: 'auto' | 'flex';
+  };
+}
+
+export interface GoogleProviderConfig extends ProviderConfig {
+  modelOptions?: {
+    reasoning_effort?: OpenAI.ReasoningEffort;
+  };
 }
 
 export interface TranslatorConfig {
-  modelOptions: Partial<CompletionParameters>;
+  temperature: number;
   languages: string[];
+  enabledModels: string[];
   prompts: string[];
   model: string;
   baseUrl: string;
@@ -32,8 +44,8 @@ export interface GlobalConfig {
     apiKey: string;
   };
   llmConfig: {
-    googleConfig: ProviderConfig;
-    openAIConfig: ProviderConfig;
+    googleConfig: GoogleProviderConfig;
+    openAIConfig: OpenAIProviderConfig;
   };
   customProviders: CustomProvider[];
   translatorConfig: Partial<TranslatorConfig>;
@@ -46,20 +58,124 @@ export const DEFAULT_CONFIG: GlobalConfig = {
   llmConfig: {
     googleConfig: {
       apiKey: '',
+      modelOptions: {
+        reasoning_effort: 'low'
+      }
     },
     openAIConfig: {
       apiKey: '',
+      modelOptions: {
+        reasoning_effort: 'low',
+        serviceTier: 'auto'
+      }
     },
   },
   customProviders: [],
 
   translatorConfig: {
-    modelOptions: {
-      temperature: 0.2,
-      reasoning_effort: 'minimal'
-    },
+    temperature: 0.2,
     model: 'gemini-3-flash-preview',
+    enabledModels: [
+      'gemini-3-flash-preview',
+      'gemini-2.5-flash',
+      'gemini-2.5-flash-lite',
+      'gpt-5-mini',
+      'gpt-5-nano',
+      'gpt-4.1-mini',
+      'gpt-4.1-nano'
+    ],
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     languages: ['ko', 'en'],
   },
 };
+
+// Model configurations
+export interface ModelInfo {
+  id: string;
+  name: string;
+  provider: 'google' | 'openai';
+  baseUrl: string;
+}
+
+export const AVAILABLE_MODELS: ModelInfo[] = [
+  // Google Models
+  {
+    id: 'gemini-3-pro-preview',
+    name: 'Gemini 3 Pro Preview',
+    provider: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  },
+  {
+    id: 'gemini-3-flash-preview',
+    name: 'Gemini 3 Flash Preview',
+    provider: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  },
+  {
+    id: 'gemini-2.5-pro',
+    name: 'Gemini 2.5 Pro',
+    provider: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  },
+  {
+    id: 'gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash',
+    provider: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  },
+  {
+    id: 'gemini-2.5-flash-lite',
+    name: 'Gemini 2.5 Flash Lite',
+    provider: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  },
+  // OpenAI Models
+  {
+    id: 'gpt-5.2',
+    name: 'GPT-5.2',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-5.1',
+    name: 'GPT-5.1',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-5',
+    name: 'GPT-5',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-5-mini',
+    name: 'GPT-5 Mini',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-5-nano',
+    name: 'GPT-5 Nano',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-4.1',
+    name: 'GPT-4.1',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-4.1-mini',
+    name: 'GPT-4.1 Mini',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+  {
+    id: 'gpt-4.1-nano',
+    name: 'GPT-4.1 Nano',
+    provider: 'openai',
+    baseUrl: 'https://api.openai.com/v1/',
+  },
+];
