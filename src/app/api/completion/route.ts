@@ -67,22 +67,9 @@ export async function POST(req: Request) {
   console.log(body);
   console.log(apiKey);
 
-  let baseUrl = body.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/';
-  // Remove /chat/completions suffix if present (common user error)
-  baseUrl = baseUrl.replace(/\/chat\/completions\/?$/, '');
-
-  if (!baseUrl.endsWith('/')) {
-    baseUrl += '/';
-  }
-
-  const client = new OpenAI({
-    apiKey: apiKey,
-    baseURL: baseUrl,
-    timeout: 15 * 60 * 1000, // 15 minutes timeout
-  });
+  let endpoint = body.baseUrl ?? DEFAULT_CONFIG?.translatorConfig?.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/';
 
   // Prepare System Prompt
-  // Client is responsible for providing the full system prompt (main + fragments)
   const promptTemplate = body.systemPrompt || '';
   const systemMessageContent = processSystemPrompt(promptTemplate, body.sourceLang, body.targetLang);
 
@@ -98,77 +85,41 @@ export async function POST(req: Request) {
   ];
 
   try {
-    const completion = await client.chat.completions.create({
+    const payload = {
       model: body.model ?? DEFAULT_CONFIG?.translatorConfig?.model ?? 'gemini-3-flash-preview',
       temperature: body.temperature ?? DEFAULT_CONFIG?.translatorConfig?.temperature ?? 0.2,
       ...(body.reasoning_effort ? { reasoning_effort: body.reasoning_effort } : {}),
       ...(body.serviceTier === 'flex' ? { service_tier: 'flex' } : {}),
       messages: messages,
-    }, { timeout: 15 * 60 * 1000 });
+    };
 
-    return Response.json(completion);
-  } catch (err) {
-    console.error('Translation API Error:', err);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-    // Handle OpenAI API errors
-    if (err instanceof OpenAI.APIError) {
-      // If body is missing (gzip issue), try raw fetch to get actual error
-      if (err.message.includes('no body')) {
-        try {
-          // Use normalized baseUrl from outer scope
-          const rawResponse = await fetch(`${baseUrl}chat/completions`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-              model: body.model ?? DEFAULT_CONFIG?.translatorConfig?.model ?? 'gemini-3-flash-preview',
-              temperature: body.temperature ?? DEFAULT_CONFIG?.translatorConfig?.temperature ?? 0.2,
-              ...(body.reasoning_effort ? { reasoning_effort: body.reasoning_effort } : {}),
-              ...(body.serviceTier === 'flex' ? { service_tier: 'flex' } : {}),
-              messages: messages,
-            }),
-          });
-
-          const rawText = await rawResponse.text();
-
-          try {
-            const rawJson = JSON.parse(rawText);
-            const parsedError = parseErrorResponse(rawJson);
-            return Response.json(parsedError, { status: err.status || 400 });
-          } catch {
-            return Response.json(
-              { error: rawText || err.message } as ApiErrorResponse,
-              { status: err.status || 400 }
-            );
-          }
-        } catch (fetchErr) {
-          console.error('Raw fetch also failed:', fetchErr);
-        }
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorJson = JSON.parse(errorText);
+        const parsedError = parseErrorResponse(errorJson);
+        return Response.json(parsedError, { status: response.status });
+      } catch {
+        return Response.json(
+          { error: errorText || response.statusText } as ApiErrorResponse,
+          { status: response.status }
+        );
       }
-
-      // Try to extract error from OpenAI.APIError object
-      let errorMessage = err.message || 'API request failed';
-      if (err.error && typeof err.error === 'object') {
-        const errorObj = err.error as any;
-        if (errorObj.message) {
-          errorMessage = errorObj.message;
-        } else if (errorObj.error?.message) {
-          errorMessage = errorObj.error.message;
-        }
-      }
-
-      return Response.json(
-        {
-          error: errorMessage,
-          code: err.code,
-          status: err.type
-        } as ApiErrorResponse,
-        { status: err.status || 500 }
-      );
     }
 
+    const data = await response.json();
+    return Response.json(data);
+  } catch (err) {
+    console.error('Translation API Error:', err);
     const message = err instanceof Error ? err.message : 'Unknown error';
     return Response.json({ error: message } as ApiErrorResponse, { status: 500 });
   }

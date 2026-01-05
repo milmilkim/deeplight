@@ -131,7 +131,7 @@ export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => 
                 serviceTier: effectiveServiceTier,
                 model: (provider === 'custom' && customProvider) ? customProvider.model : currentModel,
                 systemPrompt: fullSystemPrompt, // Combined Prompt
-                baseUrl: (provider === 'custom' && customProvider) ? customProvider.baseUrl : state.config.translatorConfig.baseUrl,
+                baseUrl: modelInfo?.baseUrl ?? state.config.translatorConfig.baseUrl,
             };
 
             return getTranslate(requestWithConfig, apiKey);

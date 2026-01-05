@@ -1,8 +1,6 @@
 import { TranslatorConfig, AVAILABLE_MODELS, CustomProvider } from '@/types/global-config';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
-import PSelect from '../p-select';
-import OpenAI from 'openai';
 import { sourceLanguages } from '@/config/languages';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslations } from 'next-intl';

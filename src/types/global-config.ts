@@ -102,7 +102,7 @@ export const DEFAULT_CONFIG: GlobalConfig = {
     promptFragments: [],
     activePromptId: 'default',
     activePromptFragmentIds: [],
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
     languages: ['ko', 'en'],
   },
 };
@@ -125,38 +125,38 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gemini-3-pro-preview',
     name: 'Gemini 3 Pro Preview',
     provider: 'google',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
   },
   {
     id: 'gemini-3-flash-preview',
     name: 'Gemini 3 Flash Preview',
     provider: 'google',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
   },
   {
     id: 'gemini-2.5-pro',
     name: 'Gemini 2.5 Pro',
     provider: 'google',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
   },
   {
     id: 'gemini-2.5-flash',
     name: 'Gemini 2.5 Flash',
     provider: 'google',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
   },
   {
     id: 'gemini-2.5-flash-lite',
     name: 'Gemini 2.5 Flash Lite',
     provider: 'google',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
   },
   // OpenAI Models
   {
     id: 'gpt-5.2',
     name: 'GPT-5.2',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
     capabilities: {
       supportsServiceTier: true,
       supportsReasoningEffort: true,
@@ -166,7 +166,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gpt-5.1',
     name: 'GPT-5.1',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
     capabilities: {
       supportsServiceTier: true,
       supportsReasoningEffort: true,
@@ -176,7 +176,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gpt-5',
     name: 'GPT-5',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
     capabilities: {
       supportsServiceTier: true,
       supportsReasoningEffort: true,
@@ -186,7 +186,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gpt-5-mini',
     name: 'GPT-5 Mini',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
     capabilities: {
       supportsServiceTier: true,
     },
@@ -195,7 +195,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gpt-5-nano',
     name: 'GPT-5 Nano',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
     capabilities: {
       supportsServiceTier: true,
     },
@@ -204,18 +204,18 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     id: 'gpt-4.1',
     name: 'GPT-4.1',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
   },
   {
     id: 'gpt-4.1-mini',
     name: 'GPT-4.1 Mini',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
   },
   {
     id: 'gpt-4.1-nano',
     name: 'GPT-4.1 Nano',
     provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1/',
+    baseUrl: 'https://api.openai.com/v1/chat/completions',
   },
 ];
