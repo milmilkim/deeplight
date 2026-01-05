@@ -64,8 +64,6 @@ export async function POST(req: Request) {
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
   const body = (await req.json()) as AiTranslateRequest;
-  console.log(body);
-  console.log(apiKey);
 
   let endpoint = body.baseUrl ?? DEFAULT_CONFIG?.translatorConfig?.baseUrl ?? 'https://generativelanguage.googleapis.com/v1beta/openai/';
 

@@ -6,7 +6,6 @@ export async function POST(req: Request) {
   if (!apiKey) return new Response('Missing API key', { status: 400 });
 
   const body = (await req.json()) as DeepLTranslateRequest;
-  console.log(body);
 
   const deeplClient = new deepl.DeepLClient(apiKey);
 

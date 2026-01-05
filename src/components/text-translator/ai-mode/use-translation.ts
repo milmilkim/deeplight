@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import OpenAI from 'openai';
 import { useConfigStore } from '@/stores/configStore';
+import { useHistoryStore } from '@/stores/historyStore';
 import { AiTranslateRequest } from '@/types/api';
 import { isApiErrorResponse } from '@/types/api-error';
 import { AVAILABLE_MODELS, CustomProvider } from '@/types/global-config';
@@ -46,6 +47,8 @@ interface UseTranslationProps {
 }
 
 export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => {
+    const addHistory = useHistoryStore((state) => state.addHistory);
+
     return useMutation<OpenAI.ChatCompletion, Error, AiTranslateRequest>({
         mutationFn: (variables) => {
             const state = useConfigStore.getState();
@@ -136,10 +139,41 @@ export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => 
 
             return getTranslate(requestWithConfig, apiKey);
         },
-        onSuccess: (data) => {
-            setResult(data.choices[0]?.message?.content ?? '');
+        onSuccess: (data, variables) => {
+            const translatedText = data.choices[0]?.message?.content ?? '';
+            setResult(translatedText);
             if (setUsage && data.usage) {
                 setUsage(data.usage);
+            }
+
+            if (translatedText) {
+                // Resolve the actual model used from the store, similar to mutationFn
+                const state = useConfigStore.getState();
+                const currentModel =
+                    state.config.translatorConfig.model ?? 'gemini-3-flash-preview';
+
+                let modelInfo = AVAILABLE_MODELS.find((m) => m.id === currentModel);
+                let customProvider: CustomProvider | undefined;
+
+                if (!modelInfo) {
+                    customProvider = state.config.customProviders?.find((p) => p.id === currentModel);
+                    if (customProvider) {
+                        modelInfo = {
+                            id: customProvider.id,
+                            name: customProvider.name,
+                            provider: 'custom',
+                            baseUrl: customProvider.baseUrl,
+                        };
+                    }
+                }
+
+                const providerName = modelInfo?.name ?? currentModel;
+
+                addHistory({
+                    sourceText: variables.text,
+                    translatedText,
+                    provider: providerName,
+                });
             }
         },
         onError: (error) => {
