@@ -15,11 +15,12 @@ import { useTranslation } from './use-translation';
 const TranslatorMainContent = () => {
   const t = useTranslations('textTranslate');
 
-  const { transRequest, setTransRequest, result, setResult } =
+  const { transRequest, setTransRequest, result, setResult, usage, setUsage } =
     useAiTextTranslate();
 
   const { mutate: translate, isPending: isTranslating } = useTranslation({
     setResult,
+    setUsage,
   });
 
   const handleClickSwap = () => {
@@ -69,24 +70,29 @@ const TranslatorMainContent = () => {
             <>
               <PromptSelector />
               <ModelSelector />
-              <div className="flex-1" />
-              <CopyButton
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(transRequest.text);
-                    alert(t('alert.copySuccess'));
-                  } catch (error) {
-                    alert(t('alert.copyError'));
-                    console.error(error);
-                  }
-                }}
-              />
-              <Button
-                disabled={isTranslating}
-                onClick={() => translate(transRequest)}
-              >
-                {t('button.translate')}
-              </Button>
+              <div className="flex-1 min-w-2" />
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground hidden sm:inline-block">
+                  {transRequest.text.length}
+                </span>
+                <CopyButton
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(transRequest.text);
+                      // alert(t('alert.copySuccess'));
+                    } catch (error) {
+                      // alert(t('alert.copyError'));
+                      console.error(error);
+                    }
+                  }}
+                />
+                <Button
+                  disabled={isTranslating}
+                  onClick={() => translate(transRequest)}
+                >
+                  {t('button.translate')}
+                </Button>
+              </div>
             </>
           }
         />
@@ -94,6 +100,32 @@ const TranslatorMainContent = () => {
           isTranslating={isTranslating}
           value={result}
           readOnly
+          footer={
+            <>
+
+              <div className="flex-1 min-w-2" />
+              <div className="flex items-center gap-2">
+                {usage && (
+                  <div className="flex gap-2 text-[10px] text-muted-foreground mr-1">
+                    <span>In: {usage.prompt_tokens}</span>
+                    <span>Out: {usage.completion_tokens}</span>
+                    {usage.total_tokens && <span>Total: {usage.total_tokens}</span>}
+                  </div>
+                )}
+                <CopyButton
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(result);
+                      // alert(t('alert.copySuccess'));
+                    } catch (error) {
+                      // alert(t('alert.copyError'));
+                      console.error(error);
+                    }
+                  }}
+                />
+              </div>
+            </>
+          }
         />
       </div>
     </div>

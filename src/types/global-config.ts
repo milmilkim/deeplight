@@ -113,6 +113,10 @@ export interface ModelInfo {
   name: string;
   provider: 'google' | 'openai';
   baseUrl: string;
+  capabilities?: {
+    supportsReasoningEffort?: boolean;
+    supportsServiceTier?: boolean;
+  };
 }
 
 export const AVAILABLE_MODELS: ModelInfo[] = [
@@ -153,30 +157,48 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     name: 'GPT-5.2',
     provider: 'openai',
     baseUrl: 'https://api.openai.com/v1/',
+    capabilities: {
+      supportsServiceTier: true,
+      supportsReasoningEffort: true,
+    },
   },
   {
     id: 'gpt-5.1',
     name: 'GPT-5.1',
     provider: 'openai',
     baseUrl: 'https://api.openai.com/v1/',
+    capabilities: {
+      supportsServiceTier: true,
+      supportsReasoningEffort: true,
+    },
   },
   {
     id: 'gpt-5',
     name: 'GPT-5',
     provider: 'openai',
     baseUrl: 'https://api.openai.com/v1/',
+    capabilities: {
+      supportsServiceTier: true,
+      supportsReasoningEffort: true,
+    },
   },
   {
     id: 'gpt-5-mini',
     name: 'GPT-5 Mini',
     provider: 'openai',
     baseUrl: 'https://api.openai.com/v1/',
+    capabilities: {
+      supportsServiceTier: true,
+    },
   },
   {
     id: 'gpt-5-nano',
     name: 'GPT-5 Nano',
     provider: 'openai',
     baseUrl: 'https://api.openai.com/v1/',
+    capabilities: {
+      supportsServiceTier: true,
+    },
   },
   {
     id: 'gpt-4.1',

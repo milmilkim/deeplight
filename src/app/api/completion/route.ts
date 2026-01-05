@@ -93,7 +93,7 @@ export async function POST(req: Request) {
     const completion = await client.chat.completions.create({
       model: body.model ?? DEFAULT_CONFIG?.translatorConfig?.model ?? 'gemini-3-flash-preview',
       temperature: body.temperature ?? DEFAULT_CONFIG?.translatorConfig?.temperature ?? 0.2,
-      reasoning_effort: body.reasoning_effort ?? 'low',
+      ...(body.reasoning_effort ? { reasoning_effort: body.reasoning_effort } : {}),
       ...(body.serviceTier === 'flex' ? { service_tier: 'flex' } : {}),
       messages: messages,
     }, { timeout: 15 * 60 * 1000 });
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
             body: JSON.stringify({
               model: body.model ?? DEFAULT_CONFIG?.translatorConfig?.model ?? 'gemini-3-flash-preview',
               temperature: body.temperature ?? DEFAULT_CONFIG?.translatorConfig?.temperature ?? 0.2,
-              reasoning_effort: body.reasoning_effort ?? 'low',
+              ...(body.reasoning_effort ? { reasoning_effort: body.reasoning_effort } : {}),
               ...(body.serviceTier === 'flex' ? { service_tier: 'flex' } : {}),
               messages: messages,
             }),

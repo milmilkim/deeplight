@@ -42,9 +42,10 @@ const getTranslate = async (
 
 interface UseTranslationProps {
     setResult: (text: string) => void;
+    setUsage?: (usage: any) => void;
 }
 
-export const useTranslation = ({ setResult }: UseTranslationProps) => {
+export const useTranslation = ({ setResult, setUsage }: UseTranslationProps) => {
     return useMutation<OpenAI.ChatCompletion, Error, AiTranslateRequest>({
         mutationFn: (variables) => {
             const state = useConfigStore.getState();
@@ -93,13 +94,23 @@ export const useTranslation = ({ setResult }: UseTranslationProps) => {
             const fullSystemPrompt =
                 `${mainPromptContent}\n\n${activeFragmentsContent}`.trim();
 
+            // --- Parameters Logic ---
+            const supportsReasoning = modelInfo?.capabilities?.supportsReasoningEffort;
+            const supportsServiceTier = modelInfo?.capabilities?.supportsServiceTier;
+
+            const effectiveReasoningEffort = supportsReasoning ? reasoningEffort : undefined;
+
+            const configServiceTier = state.config.llmConfig.openAIConfig.modelOptions?.serviceTier;
+            const effectiveServiceTier = (supportsServiceTier && configServiceTier !== 'auto')
+                ? configServiceTier
+                : undefined;
+
             // Include config settings in the request
             const requestWithConfig: AiTranslateRequest = {
                 ...variables,
                 temperature: state.config.translatorConfig.temperature ?? 0.2,
-                reasoning_effort: reasoningEffort,
-                serviceTier:
-                    state.config.llmConfig.openAIConfig.modelOptions?.serviceTier,
+                reasoning_effort: effectiveReasoningEffort,
+                serviceTier: effectiveServiceTier,
                 model: currentModel,
                 systemPrompt: fullSystemPrompt, // Combined Prompt
                 baseUrl: state.config.translatorConfig.baseUrl,
@@ -109,6 +120,9 @@ export const useTranslation = ({ setResult }: UseTranslationProps) => {
         },
         onSuccess: (data) => {
             setResult(data.choices[0]?.message?.content ?? '');
+            if (setUsage && data.usage) {
+                setUsage(data.usage);
+            }
         },
         onError: (error) => {
             const errorMessage = error.message || 'Translation failed';

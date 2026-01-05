@@ -6,6 +6,8 @@ interface AiTextTranslateContextType {
   setResult: React.Dispatch<React.SetStateAction<string>>;
   transRequest: AiTranslateRequest;
   setTransRequest: React.Dispatch<React.SetStateAction<AiTranslateRequest>>;
+  usage: any;
+  setUsage: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AiTextTranslateContext = createContext<
@@ -26,12 +28,15 @@ export const AiTextTranslateProvider: React.FC<
     model: 'gemini-3-flash-preview',
   });
   const [result, setResult] = useState<string>('');
+  const [usage, setUsage] = useState<any>(undefined);
 
   const value = {
     result,
     setResult,
     transRequest,
     setTransRequest,
+    usage,
+    setUsage,
   };
 
   return (

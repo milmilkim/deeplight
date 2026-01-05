@@ -32,7 +32,7 @@ const ContentTextarea = ({
         onChange={onChange}
         {...props}
       />
-      <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end">
+      <div className="sticky bottom-0 py-2 flex items-center gap-1 justify-end flex-wrap w-full">
         {props.footer}
       </div>
     </div>
