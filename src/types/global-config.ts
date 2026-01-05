@@ -30,11 +30,28 @@ export interface GoogleProviderConfig extends ProviderConfig {
   };
 }
 
+export interface PromptPreset {
+  id: string;
+  name: string;
+  content: string;
+  description?: string;
+}
+
+export interface PromptFragment {
+  id: string;
+  name: string;
+  content: string;
+  description?: string;
+}
+
 export interface TranslatorConfig {
   temperature: number;
   languages: string[];
   enabledModels: string[];
-  prompts: string[];
+  prompts: PromptPreset[];
+  promptFragments: PromptFragment[]; // Sub-prompts (Glossary, Tone, etc.)
+  activePromptId: string; // Main system prompt (Single selection)
+  activePromptFragmentIds: string[]; // Active sub-prompts (Multiple selection)
   model: string;
   baseUrl: string;
 }
@@ -74,16 +91,17 @@ export const DEFAULT_CONFIG: GlobalConfig = {
 
   translatorConfig: {
     temperature: 0.2,
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-2.5-flash-lite',
     enabledModels: [
-      'gemini-3-flash-preview',
-      'gemini-2.5-flash',
       'gemini-2.5-flash-lite',
-      'gpt-5-mini',
-      'gpt-5-nano',
+      'gemini-3-flash-preview',
+      'gpt-4.1-nano',
       'gpt-4.1-mini',
-      'gpt-4.1-nano'
     ],
+    prompts: [],
+    promptFragments: [],
+    activePromptId: 'default',
+    activePromptFragmentIds: [],
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     languages: ['ko', 'en'],
   },

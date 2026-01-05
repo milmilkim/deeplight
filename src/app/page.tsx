@@ -16,6 +16,11 @@ import { cn } from '@/lib/utils';
 
 const queryClient = new QueryClient();
 
+import Link from 'next/link';
+import { Library } from 'lucide-react';
+
+// ...
+
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -25,6 +30,11 @@ const Header = () => {
       <div className="text-lg font-semibold tracking-tight">DeepLight</div>
       <div className="flex items-center gap-2">
         <LocaleSelector />
+        <Link href="/prompts" passHref>
+          <Button variant="ghost" size="icon" title="Manage Prompts">
+            <Library className="h-5 w-5" />
+          </Button>
+        </Link>
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
           <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

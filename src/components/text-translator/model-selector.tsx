@@ -43,8 +43,10 @@ export default function ModelSelector() {
 
     return (
         <Select value={currentModel} onValueChange={handleModelChange}>
-            <SelectTrigger className="w-[200px] h-9 text-xs">
-                <SelectValue />
+            <SelectTrigger className="w-[130px] lg:w-[200px] h-9 text-xs">
+                <div className="truncate flex-1 text-left">
+                    <SelectValue />
+                </div>
             </SelectTrigger>
             <SelectContent>
                 {enabledModels.map((model) => {

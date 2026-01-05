@@ -16,5 +16,6 @@ export interface AiTranslateRequest {
   temperature?: number;
   reasoning_effort?: OpenAI.ReasoningEffort;
   serviceTier?: 'auto' | 'flex';
+  systemPrompt?: string;
   baseUrl?: string;
 }

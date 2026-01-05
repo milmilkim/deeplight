@@ -66,13 +66,13 @@ const Config = () => {
           <Settings className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] flex flex-col">
+      <DialogContent className="max-h-[90vh] flex flex-col max-w-4xl">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="mb-4">{t('config.header')}</DialogTitle>
         </DialogHeader>
         <div className="flex w-full flex-col overflow-y-auto flex-1 min-h-0">
-          <div className="w-full max-w-sm items-center gap-3">
-            <Tabs defaultValue="general">
+          <div className="w-full h-full">
+            <Tabs defaultValue="general" className="h-full flex flex-col">
               <TabsList>
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="google">Google</TabsTrigger>
@@ -80,7 +80,7 @@ const Config = () => {
                 {/* <TabsTrigger value="custom">Custom API</TabsTrigger> */}
                 <TabsTrigger value="deepl">DeepL</TabsTrigger>
               </TabsList>
-              <div className="mt-1">
+              <div className="mt-4 flex-1 h-full min-h-0">
                 <TabsContent value="general">
                   <General
                     config={tempConfig.translatorConfig}
@@ -105,9 +105,6 @@ const Config = () => {
                     updateConfig={updateOpenAIConfig}
                   />
                 </TabsContent>
-                {/* <TabsContent value="custom">
-                  <Custom />
-                </TabsContent> */}
               </div>
             </Tabs>
           </div>
