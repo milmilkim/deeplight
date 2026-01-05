@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { TranslateRequest } from '@/types/api';
+import { DeepLTranslateRequest } from '@/types/api';
 
 interface TextTranslateContextType {
-  transRequest: TranslateRequest;
-  setTransRequest: React.Dispatch<React.SetStateAction<TranslateRequest>>;
+  transRequest: DeepLTranslateRequest;
+  setTransRequest: React.Dispatch<React.SetStateAction<DeepLTranslateRequest>>;
   result: string;
   setResult: React.Dispatch<React.SetStateAction<string>>;
   billedCharacters: number;
@@ -17,7 +17,7 @@ interface TextTranslateProviderProps {
 }
 
 export const TextTranslateProvider: React.FC<TextTranslateProviderProps> = ({ children }) => {
-  const [transRequest, setTransRequest] = useState<TranslateRequest>({
+  const [transRequest, setTransRequest] = useState<DeepLTranslateRequest>({
     sourceLang: '',
     targetLang: 'ko',
     text: '',

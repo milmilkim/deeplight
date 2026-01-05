@@ -1,38 +1,78 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 import localforage from 'localforage';
+import {
+  GlobalConfig,
+  DEFAULT_CONFIG,
+  ProviderConfig,
+  TranslatorConfig,
+} from '@/types/global-config';
 
-export interface Config {
-  apiKey: string;
+// localforage
+localforage.config({
+  name: 'deeplight-app',
+  storeName: 'config-store',
+});
+
+const storageAdapter: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return await localforage.getItem<string>(name);
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await localforage.setItem(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await localforage.removeItem(name);
+  },
+};
+
+interface ConfigState {
+  config: GlobalConfig;
+
+  updateConfig: (newConfig: Partial<GlobalConfig>) => void;
+
+  updateTranslatorConfig:  (updates: Partial<TranslatorConfig>) => void;
+  updateOpenAIConfig: (updates: Partial<ProviderConfig>) => void;
+  updateGoogleConfig: (updates: Partial<ProviderConfig>) => void;
+  updateDeepLConfig: (updates: Partial<{ apiKey: string }>) => void;
 }
 
-export const CONFIG_KEY = 'deeplight-config';
+export const useConfigStore = create<ConfigState>()(
+  persist(
+    immer((set) => ({
+      config: DEFAULT_CONFIG,
 
-interface ConfigStore {
-  config: Config;
-  setConfig: (config: Config) => void;
-  loadConfig: () => Promise<void>;
-  saveConfig: (config: Config) => Promise<void>;
-}
+      updateConfig: (newConfig) =>
+        set((state) => {
+          Object.assign(state.config, newConfig);
+        }),
 
-export const useConfigStore = create<ConfigStore>((set) => ({
-  config: { apiKey: '' },
-  setConfig: (config) => set({ config }),
-  loadConfig: async () => {
-    try {
-      const value = await localforage.getItem(CONFIG_KEY);
-      if (value && typeof value === 'object') {
-        set({ config: value as Config });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  saveConfig: async (config) => {
-    try {
-      await localforage.setItem(CONFIG_KEY, config);
-      set({ config });
-    } catch (err) {
-      console.log(err);
-    }
-  },
-})); 
+      /** 옵션 별 업데이트 함수 */
+
+      updateTranslatorConfig: (updates) => set((state) => {
+        Object.assign(state.config.translatorConfig, updates);
+      }),
+
+      updateOpenAIConfig: (updates) =>
+        set((state) => {
+          Object.assign(state.config.llmConfig.openAIConfig, updates);
+        }),
+
+      updateGoogleConfig: (updates) =>
+        set((state) => {
+          Object.assign(state.config.llmConfig.googleConfig, updates);
+        }),
+
+      updateDeepLConfig: (updates) =>
+        set((state) => {
+          Object.assign(state.config.deepLConfig, updates);
+        }),
+    })),
+    {
+      name: 'deeplight-config',
+      storage: createJSONStorage(() => storageAdapter),
+      partialize: (state) => ({ config: state.config }),
+    },
+  ),
+);
