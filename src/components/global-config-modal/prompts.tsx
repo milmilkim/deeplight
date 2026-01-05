@@ -28,7 +28,6 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
 
     // --- Editor State ---
     const [editName, setEditName] = useState('');
-    const [editDesc, setEditDesc] = useState('');
     const [editContent, setEditContent] = useState('');
 
     // Sync with global config
@@ -64,17 +63,15 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
             const target = presets.find(p => p.id === selectedPresetId);
             if (target) {
                 setEditName(target.name);
-                setEditDesc(target.description || '');
                 setEditContent(target.content);
             }
         } else {
             const target = fragments.find(p => p.id === selectedFragmentId);
             if (target) {
                 setEditName(target.name);
-                setEditDesc(target.description || '');
                 setEditContent(target.content);
             } else {
-                setEditName(''); setEditDesc(''); setEditContent('');
+                setEditName(''); setEditContent('');
             }
         }
     }, [mode, selectedPresetId, selectedFragmentId, presets, fragments]);
@@ -85,7 +82,6 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
         const newItem: PromptPreset = {
             id: newId,
             name: 'New Prompt',
-            description: 'Custom translation prompt',
             content: 'You are a professional translator...'
         };
         const newPresets = [...presets, newItem];
@@ -119,7 +115,7 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
     const handleSavePreset = () => {
         const newPresets = presets.map(p =>
             p.id === selectedPresetId
-                ? { ...p, name: editName, description: editDesc, content: editContent }
+                ? { ...p, name: editName, content: editContent }
                 : p
         );
         setPresets(newPresets);
@@ -139,7 +135,6 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
         const newItem: PromptFragment = {
             id: newId,
             name: 'New Glossary/Rule',
-            description: 'Specific term or rule',
             content: 'Translate "..." as "..."'
         };
         const newFragments = [...fragments, newItem];
@@ -170,7 +165,7 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
         if (!selectedFragmentId) return;
         const newFragments = fragments.map(p =>
             p.id === selectedFragmentId
-                ? { ...p, name: editName, description: editDesc, content: editContent }
+                ? { ...p, name: editName, content: editContent }
                 : p
         );
         setFragments(newFragments);
@@ -241,7 +236,6 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <span className="text-xs text-muted-foreground truncate mt-1">{p.description}</span>
                                             </div>
                                         ))
                                     ) : (
@@ -276,7 +270,6 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
                                                             </Button>
                                                         </div>
                                                     </div>
-                                                    <span className="text-xs text-muted-foreground truncate mt-1">{p.description}</span>
                                                 </div>
                                             ))
                                         )
@@ -329,10 +322,7 @@ const Prompts = ({ config, updateConfig }: PromptsProps) => {
                                         <Input id="name" value={editName} onChange={(e) => setEditName(e.target.value)} />
                                     </div>
 
-                                    <div className="grid w-full items-center gap-1.5 flex-shrink-0">
-                                        <Label htmlFor="desc">Description</Label>
-                                        <Input id="desc" value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Usage description" />
-                                    </div>
+
 
                                     <div className="grid w-full gap-1.5 flex-1 min-h-[200px] flex flex-col">
                                         <div className="flex justify-between items-center">
